@@ -33,7 +33,7 @@ public enum AcronymStatesEnum {
     TO("Tocantins");
 
     @Getter
-    private String stateName;
+    private final String stateName;
 
     AcronymStatesEnum(String stateName) {
         this.stateName = stateName;

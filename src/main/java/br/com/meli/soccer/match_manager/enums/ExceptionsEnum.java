@@ -9,7 +9,7 @@ public enum ExceptionsEnum {
     CLUB_EXISTS("Club already exists");
 
     @Getter
-    private String value;
+    private final String value;
 
      ExceptionsEnum(String value) {
         this.value = value;
