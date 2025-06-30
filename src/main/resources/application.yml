@@ -1,3 +1,10 @@
 spring:
   application:
     name: match-manager
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+server:
+  error:
+    include-stacktrace: never
