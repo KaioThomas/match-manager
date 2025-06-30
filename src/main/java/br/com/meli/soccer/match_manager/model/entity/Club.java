@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class Club {
 
     private String acronymState;
 
-    private LocalDateTime creationDate;
+    private LocalDate creationDate;
 
     private boolean active;
 }

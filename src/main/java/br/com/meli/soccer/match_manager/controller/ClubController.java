@@ -1,14 +1,12 @@
-package com.meli.soccer.match_manager.controller;
+package br.com.meli.soccer.match_manager.controller;
 
-import com.meli.soccer.match_manager.dto.ClubDTO;
-import com.meli.soccer.match_manager.model.entity.Club;
-import com.meli.soccer.match_manager.service.ClubService;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.meli.soccer.match_manager.dto.request.ClubRequestDTO;
+import br.com.meli.soccer.match_manager.model.entity.Club;
+import br.com.meli.soccer.match_manager.service.ClubService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/club")
@@ -20,9 +18,9 @@ public class ClubController {
         this.clubService = clubService;
     }
 
-    @PostMapping
-    public ResponseEntity<Club> createClub(@RequestBody ClubDTO clubDTO) {
-        Club response = this.clubService.createClub(clubDTO);
+    @PostMapping("/create")
+    public ResponseEntity<Club> createClub(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
+        Club response = this.clubService.createClub(clubRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
