@@ -16,13 +16,16 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(InvalidFieldsException.class)
     public ResponseEntity<ErrorResponseDTO> invalidAcronymExceptionHandler(InvalidFieldsException exception) {
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(exception.getMessage(), HttpStatus.BAD_REQUEST, exception.getDetails());
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST, exception.getDetails());
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(exception.getBody().getTitle(), (HttpStatus) exception.getStatusCode(), exception.getBody().getDetail());
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+                ((HttpStatus) exception.getStatusCode()).name(),
+                (HttpStatus) exception.getStatusCode(),
+                Objects.requireNonNull(exception.getBindingResult().getFieldError()).getDefaultMessage());
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
     }
 

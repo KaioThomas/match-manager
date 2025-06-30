@@ -43,7 +43,7 @@ public enum AcronymStatesEnum {
         try {
             AcronymStatesEnum.valueOf(acronym);
             return true;
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException _) {
             return false;
         }
     }

@@ -18,7 +18,7 @@ public class ClubController {
         this.clubService = clubService;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Club> createClub(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
         Club response = this.clubService.createClub(clubRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

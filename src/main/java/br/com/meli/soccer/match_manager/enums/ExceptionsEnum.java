@@ -4,9 +4,8 @@ import lombok.Getter;
 
 public enum ExceptionsEnum {
 
-    CREATION_DATE_IN_FUTURE("The creation date cannot be in the future"),
-    NON_EXISTENT_ACRONYM_STATE("The acronym state does not exist."),
-    CLUB_EXISTS("Club already exists");
+    NON_EXISTENT_ACRONYM_STATE("This acronym state does not exist."),
+    CLUB_EXISTS("A club with this name and from this state already exists");
 
     @Getter
     private final String value;

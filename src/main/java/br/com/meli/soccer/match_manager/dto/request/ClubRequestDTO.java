@@ -1,7 +1,6 @@
 package br.com.meli.soccer.match_manager.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,12 @@ public class ClubRequestDTO {
     @NotEmpty
     private String acronymState;
 
+    @NotNull
+    @PastOrPresent
     private LocalDate creationDate;
 
-    private boolean active;
+    @NotNull
+    private Boolean active;
+
+    private Long id;
 }

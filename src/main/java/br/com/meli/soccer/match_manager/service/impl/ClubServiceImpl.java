@@ -32,7 +32,13 @@ public class ClubServiceImpl implements ClubService {
         club.setActive(clubRequestDTO.isActive());
         club.setCreationDate(clubRequestDTO.getCreationDate());
         club.setAcronymState(clubRequestDTO.getAcronymState().toUpperCase());
+        Club club = createClubFromClubRequestDTO(clubRequestDTO);
 
+        throwIfClubExists(club);
+        throwIfInvalidClubRequestFields(club);
+
+        return this.clubRepository.save(club);
+    }
         throwIfClubExists(club);
         throwIfClubRequestFields(club);
 
@@ -40,6 +46,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     private void throwIfClubRequestFields(Club club) {
+    private void throwIfInvalidClubRequestFields(Club club) {
         if(!AcronymStatesEnum.isValidAcronym(club.getAcronymState())) {
             throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
         }
@@ -60,5 +67,14 @@ public class ClubServiceImpl implements ClubService {
         if(alreadyHasClub) {
             throw new CreationConflictException(ExceptionsEnum.CLUB_EXISTS.getValue());
         }
+    }
+    private Club createClubFromClubRequestDTO(ClubRequestDTO clubRequestDTO) {
+        Club club = new Club();
+        club.setId(clubRequestDTO.getId());
+        club.setName(clubRequestDTO.getName().toUpperCase());
+        club.setActive(clubRequestDTO.getActive());
+        club.setCreationDate(clubRequestDTO.getCreationDate());
+        club.setAcronymState(clubRequestDTO.getAcronymState().toUpperCase());
+        return club;
     }
 }
