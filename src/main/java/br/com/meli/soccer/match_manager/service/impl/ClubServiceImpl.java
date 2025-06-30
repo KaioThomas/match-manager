@@ -58,6 +58,13 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
+    @Override
+    public void delete(Long id) {
+        Club club = this.getClub(id);
+        club.setActive(false);
+        this.clubRepository.save(club);
+    }
+
     private void throwIfClubExists(Club club) {
         List<Club> clubs = this.clubRepository.findAllByName(club.getName());
 
