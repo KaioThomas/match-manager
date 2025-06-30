@@ -5,13 +5,13 @@ import br.com.meli.soccer.match_manager.exception.CreationConflictException;
 import br.com.meli.soccer.match_manager.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.dto.request.ClubRequestDTO;
 import br.com.meli.soccer.match_manager.enums.AcronymStatesEnum;
+import br.com.meli.soccer.match_manager.exception.NotFoundException;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,11 +27,6 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Club createClub(ClubRequestDTO clubRequestDTO) {
 
-        Club club = new Club();
-        club.setName(clubRequestDTO.getName());
-        club.setActive(clubRequestDTO.isActive());
-        club.setCreationDate(clubRequestDTO.getCreationDate());
-        club.setAcronymState(clubRequestDTO.getAcronymState().toUpperCase());
         Club club = createClubFromClubRequestDTO(clubRequestDTO);
 
         throwIfClubExists(club);
@@ -39,20 +34,27 @@ public class ClubServiceImpl implements ClubService {
 
         return this.clubRepository.save(club);
     }
-        throwIfClubExists(club);
-        throwIfClubRequestFields(club);
 
+    @Override
+    public Club updateClub(ClubRequestDTO clubRequestDTO) {
+        Club club = createClubFromClubRequestDTO(clubRequestDTO);
+        throwIfClubExists(club);
+        throwIfInvalidClubRequestFields(club);
+        boolean clubExists = this.clubRepository.existsById(club.getId());
+        if(!clubExists) {
+            throw new NotFoundException("You can't update a club that doesn't exist");
+        }
         return this.clubRepository.save(club);
     }
 
-    private void throwIfClubRequestFields(Club club) {
+    @Override
+    public Club getClub(Long id) {
+        return this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
+    }
+
     private void throwIfInvalidClubRequestFields(Club club) {
         if(!AcronymStatesEnum.isValidAcronym(club.getAcronymState())) {
             throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
-        }
-
-        if(club.getCreationDate().isAfter(LocalDate.now())) {
-            throw new InvalidFieldsException(ExceptionsEnum.CREATION_DATE_IN_FUTURE.getValue());
         }
     }
 
@@ -61,13 +63,15 @@ public class ClubServiceImpl implements ClubService {
 
         boolean alreadyHasClub = clubs.stream()
                 .anyMatch(
-                        (item) -> club.getName().equalsIgnoreCase(item.getName()) &&
-                                       club.getAcronymState().equalsIgnoreCase(item.getAcronymState())
+                        item -> club.getName().equalsIgnoreCase(item.getName()) &&
+                                      club.getAcronymState().equalsIgnoreCase(item.getAcronymState()) &&
+                                     !club.getId().equals(item.getId())
                 );
         if(alreadyHasClub) {
             throw new CreationConflictException(ExceptionsEnum.CLUB_EXISTS.getValue());
         }
     }
+
     private Club createClubFromClubRequestDTO(ClubRequestDTO clubRequestDTO) {
         Club club = new Club();
         club.setId(clubRequestDTO.getId());

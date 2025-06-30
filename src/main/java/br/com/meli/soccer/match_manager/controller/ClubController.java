@@ -23,4 +23,10 @@ public class ClubController {
         Club response = this.clubService.createClub(clubRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PutMapping
+    public ResponseEntity<Club> changeClub(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
+        Club response = this.clubService.updateClub(clubRequestDTO);
+        return ResponseEntity.ok(response);
+    }
 }

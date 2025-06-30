@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Objects;
+
 @RestControllerAdvice
 public class ExceptionHandlerController {
 
@@ -31,7 +33,13 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(CreationConflictException.class)
     public ResponseEntity<ErrorResponseDTO> creationConflictExceptionHandler(CreationConflictException exception) {
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(exception.getMessage(), HttpStatus.CONFLICT, exception.getDetails());
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.CONFLICT.name(), HttpStatus.CONFLICT, exception.getDetails());
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> notFoundExceptionHandler(NotFoundException exception) {
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(errorResponseDTO.getStatus()).body(errorResponseDTO);
     }
 }

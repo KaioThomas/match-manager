@@ -6,4 +6,9 @@ import br.com.meli.soccer.match_manager.model.entity.Club;
 public interface ClubService {
 
     Club createClub(ClubRequestDTO clubRequestDTO);
+
+    Club updateClub(ClubRequestDTO clubRequestDTO);
+
+    Club getClub(Long id);
+
 }
