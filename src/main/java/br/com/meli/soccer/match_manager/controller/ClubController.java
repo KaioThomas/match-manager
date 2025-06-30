@@ -36,4 +36,11 @@ public class ClubController {
         return ResponseEntity.noContent().build();
 
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Club> getClub(@PathVariable Long id) {
+        Club response = this.clubService.getClub(id);
+        return ResponseEntity.ok(response);
+
+    }
 }
