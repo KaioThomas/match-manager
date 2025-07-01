@@ -3,13 +3,13 @@ package br.com.meli.soccer.match_manager.service.impl;
 import br.com.meli.soccer.match_manager.enums.ExceptionsEnum;
 import br.com.meli.soccer.match_manager.exception.CreationConflictException;
 import br.com.meli.soccer.match_manager.exception.InvalidFieldsException;
-import br.com.meli.soccer.match_manager.dto.request.ClubRequestDTO;
 import br.com.meli.soccer.match_manager.enums.AcronymStatesEnum;
 import br.com.meli.soccer.match_manager.exception.NotFoundException;
+import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.service.ClubService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +19,19 @@ public class ClubServiceImpl implements ClubService {
 
     private final ClubRepository clubRepository;
 
-    @Autowired
     public ClubServiceImpl(ClubRepository clubRepository) {
         this.clubRepository = clubRepository;
     }
 
-    @Override
-    public Club createClub(ClubRequestDTO clubRequestDTO) {
 
-        Club club = createClubFromClubRequestDTO(clubRequestDTO);
+    @Override
+    public Club createClub(ClubCreateRequestDTO clubCreateRequestDTO) {
+
+        Club club = new Club();
+        club.setActive(clubCreateRequestDTO.active());
+        club.setName(clubCreateRequestDTO.name().toUpperCase());
+        club.setCreationDate(clubCreateRequestDTO.creationDate());
+        club.setAcronymState(clubCreateRequestDTO.acronymState().toUpperCase());
 
         throwIfClubExists(club);
         throwIfInvalidClubRequestFields(club);
@@ -36,14 +40,24 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public Club updateClub(ClubRequestDTO clubRequestDTO) {
-        Club club = createClubFromClubRequestDTO(clubRequestDTO);
+    public Club updateClub(ClubUpdateRequestDTO clubUpdateRequestDTO) {
+
+        Club club = new Club();
+        club.setId(clubUpdateRequestDTO.id());
+        club.setActive(clubUpdateRequestDTO.active());
+        club.setName(clubUpdateRequestDTO.name().toUpperCase());
+        club.setCreationDate(clubUpdateRequestDTO.creationDate());
+        club.setAcronymState(clubUpdateRequestDTO.acronymState().toUpperCase());
+
         throwIfClubExists(club);
         throwIfInvalidClubRequestFields(club);
+
         boolean clubExists = this.clubRepository.existsById(club.getId());
+
         if(!clubExists) {
             throw new NotFoundException("You can't update a club that doesn't exist");
         }
+
         return this.clubRepository.save(club);
     }
 
@@ -52,17 +66,17 @@ public class ClubServiceImpl implements ClubService {
         return this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
     }
 
-    private void throwIfInvalidClubRequestFields(Club club) {
-        if(!AcronymStatesEnum.isValidAcronym(club.getAcronymState())) {
-            throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
-        }
-    }
-
     @Override
     public void delete(Long id) {
         Club club = this.getClub(id);
         club.setActive(false);
         this.clubRepository.save(club);
+    }
+
+    private void throwIfInvalidClubRequestFields(Club club) {
+        if(!AcronymStatesEnum.isValidAcronym(club.getAcronymState())) {
+            throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
+        }
     }
 
     private void throwIfClubExists(Club club) {
@@ -79,13 +93,4 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
-    private Club createClubFromClubRequestDTO(ClubRequestDTO clubRequestDTO) {
-        Club club = new Club();
-        club.setId(clubRequestDTO.getId());
-        club.setName(clubRequestDTO.getName().toUpperCase());
-        club.setActive(clubRequestDTO.getActive());
-        club.setCreationDate(clubRequestDTO.getCreationDate());
-        club.setAcronymState(clubRequestDTO.getAcronymState().toUpperCase());
-        return club;
-    }
 }

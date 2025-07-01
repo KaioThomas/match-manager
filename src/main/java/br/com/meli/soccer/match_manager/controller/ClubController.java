@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.controller;
 
-import br.com.meli.soccer.match_manager.dto.request.ClubRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import jakarta.validation.Valid;
@@ -19,14 +20,14 @@ public class ClubController {
     }
 
     @PostMapping
-    public ResponseEntity<Club> createClub(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
-        Club response = this.clubService.createClub(clubRequestDTO);
+    public ResponseEntity<Club> createClub(@Valid @RequestBody ClubCreateRequestDTO clubCreateRequestDTO) {
+        Club response = this.clubService.createClub(clubCreateRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping
-    public ResponseEntity<Club> changeClub(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
-        Club response = this.clubService.updateClub(clubRequestDTO);
+    public ResponseEntity<Club> changeClub(@Valid @RequestBody ClubUpdateRequestDTO clubUpdateRequestDTO) {
+        Club response = this.clubService.updateClub(clubUpdateRequestDTO);
         return ResponseEntity.ok(response);
     }
 

@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.dto.response;
+package br.com.meli.soccer.match_manager.model.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

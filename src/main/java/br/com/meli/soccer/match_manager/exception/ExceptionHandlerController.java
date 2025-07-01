@@ -1,6 +1,6 @@
 package br.com.meli.soccer.match_manager.exception;
 
-import br.com.meli.soccer.match_manager.dto.response.ErrorResponseDTO;
+import br.com.meli.soccer.match_manager.model.dto.response.ErrorResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
