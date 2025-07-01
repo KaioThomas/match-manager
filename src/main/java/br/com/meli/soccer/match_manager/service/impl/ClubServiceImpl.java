@@ -5,6 +5,7 @@ import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequest
 import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
+import br.com.meli.soccer.match_manager.service.ClubConverter;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import br.com.meli.soccer.match_manager.service.ClubValidator;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Club createClub(ClubCreateRequestDTO clubCreateRequestDTO) {
 
-        Club club = new Club();
-        club.setActive(clubCreateRequestDTO.active());
-        club.setName(clubCreateRequestDTO.name().toUpperCase());
-        club.setCreationDate(clubCreateRequestDTO.creationDate());
-        club.setAcronymState(clubCreateRequestDTO.acronymState().toUpperCase());
+        Club club = ClubConverter.toEntity(clubCreateRequestDTO);
 
         this.clubValidator.validate(club);
 
@@ -37,12 +34,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Club updateClub(ClubUpdateRequestDTO clubUpdateRequestDTO) {
 
-        Club club = new Club();
-        club.setId(clubUpdateRequestDTO.id());
-        club.setActive(clubUpdateRequestDTO.active());
-        club.setName(clubUpdateRequestDTO.name().toUpperCase());
-        club.setCreationDate(clubUpdateRequestDTO.creationDate());
-        club.setAcronymState(clubUpdateRequestDTO.acronymState().toUpperCase());
+        Club club = ClubConverter.toEntity(clubUpdateRequestDTO);
 
         this.clubValidator.validate(club);
 
