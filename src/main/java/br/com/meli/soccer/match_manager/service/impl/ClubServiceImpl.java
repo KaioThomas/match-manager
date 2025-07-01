@@ -10,6 +10,8 @@ import br.com.meli.soccer.match_manager.service.ClubService;
 import br.com.meli.soccer.match_manager.service.ClubValidator;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ClubServiceImpl implements ClubService {
 
@@ -22,7 +24,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public Club createClub(ClubCreateRequestDTO clubCreateRequestDTO) {
+    public Club create(ClubCreateRequestDTO clubCreateRequestDTO) {
 
         Club club = ClubConverter.toEntity(clubCreateRequestDTO);
 
@@ -32,7 +34,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public Club updateClub(ClubUpdateRequestDTO clubUpdateRequestDTO) {
+    public Club update(ClubUpdateRequestDTO clubUpdateRequestDTO) {
 
         Club club = ClubConverter.toEntity(clubUpdateRequestDTO);
 
@@ -48,13 +50,13 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public Club getClub(Long id) {
+    public Club getById(UUID id) {
         return this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
     }
 
     @Override
-    public void delete(Long id) {
-        Club club = this.getClub(id);
+    public void deleteById(UUID id) {
+        Club club = this.getById(id);
         club.setActive(false);
         this.clubRepository.save(club);
     }

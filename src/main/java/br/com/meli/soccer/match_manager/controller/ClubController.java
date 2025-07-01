@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/club")
 public class ClubController {
@@ -20,27 +22,27 @@ public class ClubController {
     }
 
     @PostMapping
-    public ResponseEntity<Club> createClub(@Valid @RequestBody ClubCreateRequestDTO clubCreateRequestDTO) {
-        Club response = this.clubService.createClub(clubCreateRequestDTO);
+    public ResponseEntity<Club> create(@Valid @RequestBody ClubCreateRequestDTO clubCreateRequestDTO) {
+        Club response = this.clubService.create(clubCreateRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping
-    public ResponseEntity<Club> changeClub(@Valid @RequestBody ClubUpdateRequestDTO clubUpdateRequestDTO) {
-        Club response = this.clubService.updateClub(clubUpdateRequestDTO);
+    public ResponseEntity<Club> update(@Valid @RequestBody ClubUpdateRequestDTO clubUpdateRequestDTO) {
+        Club response = this.clubService.update(clubUpdateRequestDTO);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Object> deleteClub(@PathVariable Long id) {
-        this.clubService.delete(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteById(@PathVariable UUID id) {
+        this.clubService.deleteById(id);
         return ResponseEntity.noContent().build();
 
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Club> getClub(@PathVariable Long id) {
-        Club response = this.clubService.getClub(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<Club> getById(@PathVariable UUID id) {
+        Club response = this.clubService.getById(id);
         return ResponseEntity.ok(response);
 
     }

@@ -4,14 +4,16 @@ import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequest
 import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 
+import java.util.UUID;
+
 public interface ClubService {
 
-    Club createClub(ClubCreateRequestDTO clubRequestDTO);
+    Club create(ClubCreateRequestDTO clubRequestDTO);
 
-    Club updateClub(ClubUpdateRequestDTO clubRequestDTO);
+    Club update(ClubUpdateRequestDTO clubRequestDTO);
 
-    Club getClub(Long id);
+    Club getById(UUID id);
 
-    void delete(Long id);
+    void deleteById(UUID id);
 
 }

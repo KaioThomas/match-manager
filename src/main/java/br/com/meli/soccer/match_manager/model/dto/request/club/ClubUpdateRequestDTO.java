@@ -6,10 +6,11 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record ClubUpdateRequestDTO(
         @NotNull
-        Long id,
+        UUID id,
 
         @NotEmpty
         @Size(min = 2)
