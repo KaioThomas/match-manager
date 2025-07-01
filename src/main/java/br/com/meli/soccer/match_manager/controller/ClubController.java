@@ -5,6 +5,7 @@ import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequest
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/club")
+@RequiredArgsConstructor
 public class ClubController {
 
     private final ClubService clubService;
-
-    public ClubController(ClubService clubService) {
-        this.clubService = clubService;
-    }
 
     @PostMapping
     public ResponseEntity<Club> create(@Valid @RequestBody ClubCreateRequestDTO clubCreateRequestDTO) {

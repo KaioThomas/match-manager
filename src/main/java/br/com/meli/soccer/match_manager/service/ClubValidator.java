@@ -6,18 +6,16 @@ import br.com.meli.soccer.match_manager.exception.CreationConflictException;
 import br.com.meli.soccer.match_manager.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ClubValidator {
 
     private final ClubRepository clubRepository;
-
-    public ClubValidator(ClubRepository clubRepository) {
-        this.clubRepository = clubRepository;
-    }
 
     public void validate(Club club) {
         throwIfInvalidClubRequestFields(club);

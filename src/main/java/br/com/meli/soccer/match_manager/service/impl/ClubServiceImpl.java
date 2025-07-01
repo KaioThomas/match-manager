@@ -8,20 +8,17 @@ import br.com.meli.soccer.match_manager.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.service.ClubConverter;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import br.com.meli.soccer.match_manager.service.ClubValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ClubServiceImpl implements ClubService {
 
     private final ClubRepository clubRepository;
     private final ClubValidator clubValidator;
-
-    public ClubServiceImpl(ClubRepository clubRepository, ClubValidator clubValidator) {
-        this.clubRepository = clubRepository;
-        this.clubValidator = clubValidator;
-    }
 
     @Override
     public Club create(ClubCreateRequestDTO clubCreateRequestDTO) {
