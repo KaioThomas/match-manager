@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -44,5 +45,17 @@ public class ClubController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ClubResponseDTO>> getAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String acronymState,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "2") Integer size,
+            @RequestParam(defaultValue = "name") String orderBy,
+            @RequestParam(defaultValue = "ASC") String direction
+    ) {
+        List<ClubResponseDTO> response = this.clubService.getAll(name, acronymState, active, page, size, orderBy, direction);
+        return ResponseEntity.ok(response);
     }
 }
