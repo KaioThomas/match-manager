@@ -17,6 +17,7 @@ public record ClubUpdateRequestDTO(
         String name,
 
         @NotEmpty
+        @Size(min = 2, max = 2)
         String acronymState,
 
         @NotNull

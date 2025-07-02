@@ -2,6 +2,7 @@ package br.com.meli.soccer.match_manager.service;
 
 import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
 import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.response.club.ClubResponseDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,15 @@ public class ClubConverter {
         club.setCreationDate(clubUpdateRequestDTO.creationDate());
         club.setAcronymState(clubUpdateRequestDTO.acronymState().toUpperCase());
         return club;
+    }
+
+    public static ClubResponseDTO toResponseDTO(Club club) {
+        return new ClubResponseDTO(
+                club.getId(),
+                club.getName(),
+                club.getAcronymState(),
+                club.getCreationDate(),
+                club.getActive()
+        );
     }
 }

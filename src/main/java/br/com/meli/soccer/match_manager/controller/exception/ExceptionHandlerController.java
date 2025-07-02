@@ -1,6 +1,9 @@
-package br.com.meli.soccer.match_manager.exception;
+package br.com.meli.soccer.match_manager.controller.exception;
 
 import br.com.meli.soccer.match_manager.model.dto.response.ErrorResponseDTO;
+import br.com.meli.soccer.match_manager.model.exception.CreationConflictException;
+import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
+import br.com.meli.soccer.match_manager.model.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

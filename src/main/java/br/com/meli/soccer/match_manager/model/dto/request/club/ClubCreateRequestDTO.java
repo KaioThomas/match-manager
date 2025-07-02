@@ -9,10 +9,11 @@ import java.time.LocalDate;
 
 public record ClubCreateRequestDTO(
          @NotEmpty
-         @Size(min = 2)
+         @Size(min = 2, max = 45)
          String name,
 
          @NotEmpty
+         @Size(min = 2, max = 2)
          String acronymState,
 
          @NotNull

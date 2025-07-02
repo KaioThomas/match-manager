@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.exception;
+package br.com.meli.soccer.match_manager.model.exception;
 
 import lombok.Getter;
 import lombok.Setter;
