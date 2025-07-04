@@ -1,10 +1,10 @@
 package br.com.meli.soccer.match_manager.controller;
 
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
-import br.com.meli.soccer.match_manager.model.dto.response.club.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.ClubRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.response.ClubResponseDTO;
 import br.com.meli.soccer.match_manager.service.ClubService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,27 +20,30 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    @PostMapping
-    public ResponseEntity<ClubResponseDTO> create(@Valid @RequestBody ClubCreateRequestDTO clubCreateRequestDTO) {
-        ClubResponseDTO response = this.clubService.create(clubCreateRequestDTO);
+    @PostMapping()
+    public ResponseEntity<ClubResponseDTO> create(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
+        ClubResponseDTO response = this.clubService.create(clubRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping
-    public ResponseEntity<ClubResponseDTO> update(@Valid @RequestBody ClubUpdateRequestDTO clubUpdateRequestDTO) {
-        ClubResponseDTO response = this.clubService.update(clubUpdateRequestDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<ClubResponseDTO> update(
+            @Valid @RequestBody ClubRequestDTO clubRequestDTO,
+            @PathVariable @NotNull String id
+    ) {
+        ClubResponseDTO response = this.clubService.update(clubRequestDTO, id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable UUID id) {
+    public ResponseEntity<Object> deleteById(@PathVariable String id) {
         this.clubService.deleteById(id);
         return ResponseEntity.noContent().build();
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClubResponseDTO> getById(@PathVariable UUID id) {
+    public ResponseEntity<ClubResponseDTO> getById(@PathVariable String id) {
         ClubResponseDTO response = this.clubService.getById(id);
         return ResponseEntity.ok(response);
     }

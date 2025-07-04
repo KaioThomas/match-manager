@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.model.dto.response.club;
+package br.com.meli.soccer.match_manager.model.dto.response;
 
 import java.time.LocalDate;
 import java.util.UUID;

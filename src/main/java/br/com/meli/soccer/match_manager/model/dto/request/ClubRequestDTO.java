@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.model.dto.request.club;
+package br.com.meli.soccer.match_manager.model.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -7,9 +7,9 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-public record ClubCreateRequestDTO(
+public record ClubRequestDTO(
          @NotEmpty
-         @Size(min = 2, max = 45)
+         @Size(min = 2, max = 50)
          String name,
 
          @NotEmpty

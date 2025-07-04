@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.enums;
+package br.com.meli.soccer.match_manager.model.enums;
 
 import lombok.Getter;
 

@@ -1,21 +1,19 @@
 package br.com.meli.soccer.match_manager.service;
 
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
-import br.com.meli.soccer.match_manager.model.dto.response.club.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.ClubRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.response.ClubResponseDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ClubService {
 
-    ClubResponseDTO create(ClubCreateRequestDTO clubRequestDTO);
+    ClubResponseDTO create(ClubRequestDTO clubRequestDTO);
 
-    ClubResponseDTO update(ClubUpdateRequestDTO clubRequestDTO);
+    ClubResponseDTO update(ClubRequestDTO clubRequestDTO, String id);
 
-    ClubResponseDTO getById(UUID id);
+    ClubResponseDTO getById(String id);
 
-    void deleteById(UUID id);
+    void deleteById(String id);
 
     List<ClubResponseDTO> getAll(
             String name,

@@ -1,7 +1,7 @@
-package br.com.meli.soccer.match_manager.service;
+package br.com.meli.soccer.match_manager.service.validator;
 
-import br.com.meli.soccer.match_manager.enums.AcronymStatesEnum;
-import br.com.meli.soccer.match_manager.enums.ExceptionsEnum;
+import br.com.meli.soccer.match_manager.model.enums.AcronymStatesEnum;
+import br.com.meli.soccer.match_manager.model.enums.ExceptionsEnum;
 import br.com.meli.soccer.match_manager.model.exception.CreationConflictException;
 import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.model.entity.Club;
@@ -21,16 +21,16 @@ public class ClubValidator {
     }
 
     private void throwIfInvalidClubRequestFields(Club club) {
-        if(!AcronymStatesEnum.isValidAcronym(club.getAcronymState())) {
+        if(!AcronymStatesEnum.isValidAcronym(club.getStateAcronym())) {
             throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
         }
     }
 
     private void throwIfClubExists(Club club) {
 
-        clubRepository.findByNameAndAcronymState(
+        clubRepository.findByNameAndStateAcronym(
                 club.getName(),
-                club.getAcronymState()
+                club.getStateAcronym()
         ).ifPresent(
                 clubEqualFounded -> {
                     boolean isSameClub = club.getId() != null && club.getId().equals(clubEqualFounded.getId());

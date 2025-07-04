@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface ClubRepository extends JpaRepository<Club, UUID> {
 
-    Optional<Club> findByNameAndAcronymState(String name, String acronymState);
+    Optional<Club> findByNameAndStateAcronym(String name, String acronymState);
 }

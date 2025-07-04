@@ -8,24 +8,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
 @Getter
 @Setter
 @ToString
-@Entity
-public class Club {
+public class Stadium {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String name;
-
-    private String stateAcronym;
-
-    private LocalDate creationDate;
-
-    private Boolean active;
 }

@@ -1,21 +1,20 @@
 package br.com.meli.soccer.match_manager.service.impl;
 
-import br.com.meli.soccer.match_manager.model.dto.response.club.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.ClubRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.response.ClubResponseDTO;
 import br.com.meli.soccer.match_manager.model.exception.NotFoundException;
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubCreateRequestDTO;
-import br.com.meli.soccer.match_manager.model.dto.request.club.ClubUpdateRequestDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
-import br.com.meli.soccer.match_manager.service.ClubConverter;
+import br.com.meli.soccer.match_manager.service.converter.ClubConverter;
 import br.com.meli.soccer.match_manager.service.ClubService;
-import br.com.meli.soccer.match_manager.service.ClubValidator;
+import br.com.meli.soccer.match_manager.service.validator.ClubValidator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +24,10 @@ public class ClubServiceImpl implements ClubService {
     private final ClubValidator clubValidator;
 
     @Override
-    public ClubResponseDTO create(ClubCreateRequestDTO clubCreateRequestDTO) {
+    @Transactional
+    public ClubResponseDTO create(ClubRequestDTO clubRequestDTO) {
 
-        Club club = ClubConverter.toEntity(clubCreateRequestDTO);
+        Club club = ClubConverter.toEntity(clubRequestDTO);
 
         this.clubValidator.validate(club);
 
@@ -35,13 +35,14 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ClubResponseDTO update(ClubUpdateRequestDTO clubUpdateRequestDTO) {
+    @Transactional
+    public ClubResponseDTO update(ClubRequestDTO clubRequestDTO, String id) {
 
-        Club club = ClubConverter.toEntity(clubUpdateRequestDTO);
+        Club club = ClubConverter.toEntity(clubRequestDTO);
 
         this.clubValidator.validate(club);
 
-        boolean clubExists = this.clubRepository.existsById(club.getId());
+        boolean clubExists = this.clubRepository.existsById(UUID.fromString(id));
 
         if(!clubExists) {
             throw new NotFoundException("You can't update a club that doesn't exist");
@@ -51,19 +52,22 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ClubResponseDTO getById(UUID id) {
-        Club club = this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
+    @Transactional
+    public ClubResponseDTO getById(String id) {
+        Club club = this.clubRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("Club not found"));
         return ClubConverter.toResponseDTO(club);
     }
 
     @Override
-    public void deleteById(UUID id) {
-        Club club = this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
+    @Transactional
+    public void deleteById(String id) {
+        Club club = this.clubRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("Club not found"));
         club.setActive(false);
         this.clubRepository.save(club);
     }
 
     @Override
+    @Transactional
     public List<ClubResponseDTO> getAll(
             String name,
             String acronymState,
@@ -74,11 +78,11 @@ public class ClubServiceImpl implements ClubService {
             String direction
     ) {
         Club clubExample = new Club();
-        clubExample.setAcronymState(acronymState);
+        clubExample.setStateAcronym(acronymState);
         clubExample.setName(name);
         clubExample.setActive(active);
 
-        ExampleMatcher exampleMatcher =  ExampleMatcher.matching()
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                 .withIgnoreCase()
                 .withIgnoreNullValues();
 
@@ -89,6 +93,6 @@ public class ClubServiceImpl implements ClubService {
         return page.getContent()
                 .stream()
                 .map(ClubConverter::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
