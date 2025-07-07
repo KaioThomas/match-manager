@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/club")
@@ -20,7 +19,7 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ClubResponseDTO> create(@Valid @RequestBody ClubRequestDTO clubRequestDTO) {
         ClubResponseDTO response = this.clubService.create(clubRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

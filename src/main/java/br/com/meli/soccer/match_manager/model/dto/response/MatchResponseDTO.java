@@ -9,5 +9,5 @@ public record MatchResponseDTO(
         Integer homeClubGoals,
         Integer visitingClubGoals,
         StadiumResponseDTO stadium,
-        LocalDateTime dateAndHour
+        LocalDateTime dateTime
 ) { }

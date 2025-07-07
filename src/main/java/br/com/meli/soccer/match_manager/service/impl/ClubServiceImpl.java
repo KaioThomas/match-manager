@@ -14,7 +14,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +37,11 @@ public class ClubServiceImpl implements ClubService {
     @Transactional
     public ClubResponseDTO update(ClubRequestDTO clubRequestDTO, String id) {
 
-        Club club = ClubConverter.toEntity(clubRequestDTO);
+        Club club = ClubConverter.toEntity(clubRequestDTO, id);
 
         this.clubValidator.validate(club);
 
-        boolean clubExists = this.clubRepository.existsById(UUID.fromString(id));
+        boolean clubExists = this.clubRepository.existsById(id);
 
         if(!clubExists) {
             throw new NotFoundException("You can't update a club that doesn't exist");
@@ -54,14 +53,14 @@ public class ClubServiceImpl implements ClubService {
     @Override
     @Transactional
     public ClubResponseDTO getById(String id) {
-        Club club = this.clubRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("Club not found"));
+        Club club = this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
         return ClubConverter.toResponseDTO(club);
     }
 
     @Override
     @Transactional
     public void deleteById(String id) {
-        Club club = this.clubRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("Club not found"));
+        Club club = this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException("Club not found"));
         club.setActive(false);
         this.clubRepository.save(club);
     }

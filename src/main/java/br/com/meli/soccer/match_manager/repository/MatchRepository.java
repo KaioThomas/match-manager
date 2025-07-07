@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 @Repository
-public interface MatchRepository extends JpaRepository<Match, UUID> {
+public interface MatchRepository extends JpaRepository<Match, String> {
 
     List<Match> findAllByHomeClubId(UUID id);
     List<Match> findAllByVisitingClubId(UUID id);
+    List<Match> findAllByHomeClubId(String id);
+    List<Match> findAllByVisitingClubId(String id);
 }

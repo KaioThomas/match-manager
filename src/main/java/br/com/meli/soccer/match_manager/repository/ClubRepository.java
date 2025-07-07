@@ -5,10 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface ClubRepository extends JpaRepository<Club, UUID> {
+public interface ClubRepository extends JpaRepository<Club, String> {
 
     Optional<Club> findByNameAndStateAcronym(String name, String acronymState);
 }

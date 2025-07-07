@@ -14,7 +14,7 @@ public class StadiumConverter {
 
         Stadium stadium = new Stadium();
 
-        id.ifPresent(idOrNull -> stadium.setId(UUID.fromString(idOrNull)));
+        id.ifPresent(stadium::setId);
 
         stadium.setName(stadiumRequestDTO.name());
         return stadium;

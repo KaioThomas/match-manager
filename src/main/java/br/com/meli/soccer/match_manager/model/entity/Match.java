@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ public class Match {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "home_club_id", referencedColumnName = "id")
@@ -25,14 +24,13 @@ public class Match {
     @JoinColumn(name = "visiting_club_id", referencedColumnName = "id")
     private Club visitingClub;
 
-    private int homeClubGoals;
+    private Integer homeClubGoals;
 
-    private int visitingClubGoals;
+    private Integer visitingClubGoals;
 
     @ManyToOne
     @JoinColumn(name = "stadium_id", referencedColumnName = "id")
     private Stadium stadium;
 
-    @Column(name = "date_and_hour")
-    private LocalDateTime dateAndHour;
+    private LocalDateTime dateTime;
 }

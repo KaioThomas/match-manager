@@ -44,7 +44,7 @@ public class MatchConverter {
         StadiumResponseDTO stadiumResponseDTO = StadiumConverter.toResponseDTO(match.getStadium());
 
         return new MatchResponseDTO(
-                match.getId().toString(),
+                match.getId(),
                 homeClubResponse,
                 visitingClubResponse,
                 match.getHomeClubGoals(),

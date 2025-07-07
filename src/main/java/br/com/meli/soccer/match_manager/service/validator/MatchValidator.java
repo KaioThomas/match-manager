@@ -48,7 +48,7 @@ public class MatchValidator {
             throw new InvalidFieldsException("The club is invalid");
         }
 
-        LocalDate matchDate = match.getDateAndHour().toLocalDate();
+        LocalDate matchDate = match.getDateTime().toLocalDate();
 
         if(matchDate.isBefore(visitingClub.getCreationDate()) || matchDate.isBefore(homeClub.getCreationDate())) {
             throw new CreationConflictException("The match date cannot be before the clubs creation date");
@@ -72,7 +72,7 @@ public class MatchValidator {
     }
 
     private boolean areMatchesLessThan48HoursFromEachOther(Match match, Match matchClub) {
-        long hoursOfDiference = Math.abs(Duration.between(match.getDateAndHour(), matchClub.getDateAndHour()).toHours());
+        long hoursOfDiference = Math.abs(Duration.between(match.getDateTime(), matchClub.getDateTime()).toHours());
         return hoursOfDiference < 48;
     }
 }

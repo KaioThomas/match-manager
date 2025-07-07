@@ -19,6 +19,16 @@ public class ClubConverter {
         return club;
     }
 
+    public static Club toEntity(ClubRequestDTO clubRequestDTO, String id) {
+        Club club = new Club();
+        club.setId(id);
+        club.setActive(clubRequestDTO.active());
+        club.setName(clubRequestDTO.name().toUpperCase());
+        club.setCreationDate(clubRequestDTO.creationDate());
+        club.setStateAcronym(clubRequestDTO.acronymState().toUpperCase());
+        return club;
+    }
+
     public static ClubResponseDTO toResponseDTO(Club club) {
         return new ClubResponseDTO(
                 club.getId(),

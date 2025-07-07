@@ -4,14 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public record MatchRequestDTO(
         @NotNull
-        UUID homeClubId,
+        String homeClubId,
 
         @NotNull
-        UUID visitingClubId,
+        String visitingClubId,
 
         @NotNull
         Integer homeClubGoals,
@@ -20,10 +19,10 @@ public record MatchRequestDTO(
         Integer visitingClubGoals,
 
         @NotNull
-        UUID stadiumId,
+        String stadiumId,
 
         @NotNull
         @PastOrPresent
-        LocalDateTime dateAndHour
+        LocalDateTime dateTime
 ){
 }
