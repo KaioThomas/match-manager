@@ -6,6 +6,7 @@ import br.com.meli.soccer.match_manager.model.exception.CreationConflictExceptio
 import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
+import br.com.meli.soccer.match_manager.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +15,21 @@ import org.springframework.stereotype.Service;
 public class ClubValidator {
 
     private final ClubRepository clubRepository;
+    private final MatchRepository matchRepository;
 
     public void validate(Club club) {
-        throwIfInvalidClubRequestFields(club);
-        throwIfClubExists(club);
+        validateClubAcronymState(club);
+        validateClubAlreadyExists(club);
+        validateClcubHasMatchBeforeCreationDate(club);
     }
 
-    private void throwIfInvalidClubRequestFields(Club club) {
+    private void validateClubAcronymState(Club club) {
         if(!AcronymStatesEnum.isValidAcronym(club.getStateAcronym())) {
             throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
         }
     }
 
-    private void throwIfClubExists(Club club) {
+    private void validateClubAlreadyExists(Club club) {
 
         clubRepository.findByNameAndStateAcronym(
                 club.getName(),
@@ -39,5 +42,12 @@ public class ClubValidator {
                     }
                 }
         );
+    }
+
+    private void validateClcubHasMatchBeforeCreationDate(Club club) {
+        boolean existsMatchBeforeCreationDate = this.matchRepository.existsClubMatchBeforeCreationDate(club.getId(), club.getCreationDate()) > 0;
+
+        if(existsMatchBeforeCreationDate) throw new CreationConflictException("The creation date cannot be after a match");
+
     }
 }

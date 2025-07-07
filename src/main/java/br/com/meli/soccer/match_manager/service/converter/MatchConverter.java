@@ -8,33 +8,30 @@ import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.model.entity.Match;
 import br.com.meli.soccer.match_manager.model.entity.Stadium;
 
-import java.util.Optional;
-import java.util.UUID;
-
 public class MatchConverter {
 
     public static Match toEntity(MatchRequestDTO matchRequestDTO, Stadium stadium, Club homeClub, Club visitingclub) {
         Match match = new Match();
 
         match.setHomeClub(homeClub);
+        match.setHomeClubGoals(matchRequestDTO.homeClubGoals());
         match.setVisitingClub(visitingclub);
         match.setStadium(stadium);
-        match.setHomeClubGoals(match.getHomeClubGoals());
-        match.setVisitingClubGoals(match.getVisitingClubGoals());
-        match.setDateAndHour(matchRequestDTO.dateAndHour());
+        match.setVisitingClubGoals(matchRequestDTO.visitingClubGoals());
+        match.setDateTime(matchRequestDTO.dateTime());
         return match;
     }
 
     public static Match toEntity(MatchRequestDTO matchRequestDTO, Stadium stadium, Club homeClub, Club visitingclub, String id) {
         Match match = new Match();
 
-        match.setId(UUID.fromString(id));
+        match.setId(id);
         match.setHomeClub(homeClub);
         match.setVisitingClub(visitingclub);
         match.setStadium(stadium);
         match.setHomeClubGoals(match.getHomeClubGoals());
         match.setVisitingClubGoals(match.getVisitingClubGoals());
-        match.setDateAndHour(matchRequestDTO.dateAndHour());
+        match.setDateTime(matchRequestDTO.dateTime());
         return match;
     }
 
@@ -50,7 +47,7 @@ public class MatchConverter {
                 match.getHomeClubGoals(),
                 match.getVisitingClubGoals(),
                 stadiumResponseDTO,
-                match.getDateAndHour()
+                match.getDateTime()
         );
     }
 }

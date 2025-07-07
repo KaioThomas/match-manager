@@ -33,7 +33,6 @@ public class MathServiceImpl implements MatchService {
         Club homeClub = this.clubRepository.findById(matchRequestDTO.homeClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
         Club visitingClub = this.clubRepository.findById(matchRequestDTO.visitingClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
         Stadium stadium = this.stadiumRepository.findById(matchRequestDTO.stadiumId()).orElseThrow(() -> new InvalidFieldsException("The stadium is invalid"));
-
         Match match = MatchConverter.toEntity(matchRequestDTO, stadium, homeClub, visitingClub);
         this.matchValidator.validate(match);
         return MatchConverter.toResponseDTO(this.matchRepository.save(match));
