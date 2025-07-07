@@ -21,25 +21,26 @@ public class MatchValidator {
     private final ClubRepository clubRepository;
 
     public void validate(Match match) {
-        throwIfClubsAreEquals(match);
-        throwIfMatchResultIsLowerThanZero(match);
-        throwIfClubsAreInvalid(match);
-        throwIfClubAlreadyHasMatch(match);
+        validateClubsAreEquals(match);
+        validateMatchResultIsLowerThanZero(match);
+        validateClubsAreInvalid(match);
+        validateClubAlreadyHasMatch(match);
+        validateStadiumHasMatchAtSameDate(match);
     }
 
-    private void throwIfClubsAreEquals(Match match) {
+    public void validateClubsAreEquals(Match match) {
         if(match.getHomeClub().getId().equals(match.getVisitingClub().getId())) {
             throw new InvalidFieldsException("The clubs at the match cannot be the same");
         }
     }
 
-    private void throwIfMatchResultIsLowerThanZero(Match match) {
+    public void validateMatchResultIsLowerThanZero(Match match) {
         if(match.getHomeClubGoals() < 0 || match.getVisitingClubGoals() < 0) {
             throw new InvalidFieldsException("The number of goals cannot be lower than zero");
         }
     }
 
-    private void throwIfClubsAreInvalid(Match match) {
+    public void validateClubsAreInvalid(Match match) {
 
         Club visitingClub = this.clubRepository.findById(match.getVisitingClub().getId()).orElse(null);
         Club homeClub = this.clubRepository.findById(match.getHomeClub().getId()).orElse(null);
@@ -55,20 +56,25 @@ public class MatchValidator {
         }
     }
 
-    private void throwIfClubAlreadyHasMatch(Match match) {
+    public void validateClubAlreadyHasMatch(Match match) {
         List<Match> homeClubMatches = this.matchRepository.findAllByHomeClubId(match.getHomeClub().getId());
-        boolean isInvalidHomeClubMatchDate = homeClubMatches.stream().anyMatch(matchHomeclub -> areMatchesLessThan48HoursFromEachOther(match, matchHomeclub));
+        boolean isInvalidHomeClubMatchDate = homeClubMatches.stream().anyMatch(matchHomeClub -> areMatchesLessThan48HoursFromEachOther(match, matchHomeClub));
 
         if(isInvalidHomeClubMatchDate) {
             throw new CreationConflictException("The interval from last match must be greater than 48 hours");
         }
 
         List<Match> visitingClubMatches = this.matchRepository.findAllByVisitingClubId(match.getVisitingClub().getId());
-        boolean isInvalidVisitingClubMatchDate = visitingClubMatches.stream().anyMatch(matchVisitingclub -> areMatchesLessThan48HoursFromEachOther(match, matchVisitingclub));
+        boolean isInvalidVisitingClubMatchDate = visitingClubMatches.stream().anyMatch(matchVisitingClub -> areMatchesLessThan48HoursFromEachOther(match, matchVisitingClub));
 
         if(isInvalidVisitingClubMatchDate) {
             throw new CreationConflictException("The interval from last match must be greater than 48 hours");
         }
+    }
+
+    public void validateStadiumHasMatchAtSameDate(Match match) {
+        boolean existsMatchAtStadiumAtDate = this.matchRepository.existsMatchAtStadiumAtDate(match.getStadium().getId(), match.getDateTime().toLocalDate()).orElse(0) > 0;
+        if(existsMatchAtStadiumAtDate) throw new CreationConflictException("The stadium already has a match at the same day");
     }
 
     private boolean areMatchesLessThan48HoursFromEachOther(Match match, Match matchClub) {

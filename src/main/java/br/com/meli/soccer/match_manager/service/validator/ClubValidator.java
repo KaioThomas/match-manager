@@ -45,7 +45,7 @@ public class ClubValidator {
     }
 
     private void validateClcubHasMatchBeforeCreationDate(Club club) {
-        boolean existsMatchBeforeCreationDate = this.matchRepository.existsClubMatchBeforeCreationDate(club.getId(), club.getCreationDate()) > 0;
+        boolean existsMatchBeforeCreationDate = this.matchRepository.existsClubMatchBeforeCreationDate(club.getId(), club.getCreationDate()).orElse(0) > 0;
 
         if(existsMatchBeforeCreationDate) throw new CreationConflictException("The creation date cannot be after a match");
 

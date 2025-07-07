@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface MatchRepository extends JpaRepository<Match, String> {
 
@@ -19,5 +21,12 @@ public interface MatchRepository extends JpaRepository<Match, String> {
          OR visiting_club_id = :id 
          AND date_time < :creationDate;
     """, nativeQuery = true)
-    int existsClubMatchBeforeCreationDate(String id, LocalDate creationDate);
+    Optional<Integer> existsClubMatchBeforeCreationDate(String id, LocalDate creationDate);
+
+    @Query(value = """
+            SELECT 1 FROM football_match
+            WHERE stadium_id = :stadiumId
+            AND DATE(date_time) = :date
+""", nativeQuery = true)
+    Optional<Integer> existsMatchAtStadiumAtDate(String stadiumId, LocalDate date);
 }
