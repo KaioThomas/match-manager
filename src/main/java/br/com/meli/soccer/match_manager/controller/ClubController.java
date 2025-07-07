@@ -53,7 +53,7 @@ public class ClubController {
             @RequestParam(required = false) String acronymState,
             @RequestParam(required = false) Boolean active,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "2") Integer size,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "ASC") String direction
     ) {

@@ -1,10 +1,10 @@
 package br.com.meli.soccer.match_manager.service;
 
 import br.com.meli.soccer.match_manager.model.dto.request.MatchRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.model.dto.response.MatchResponseDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface MatchService {
 
@@ -12,16 +12,9 @@ public interface MatchService {
 
     MatchResponseDTO update(MatchRequestDTO matchRequestDTO);
 
-    MatchResponseDTO getById(UUID id);
+    MatchResponseDTO getById(String id);
 
-    List<MatchResponseDTO> getAll(
-            UUID clubId,
-            UUID stadiumId,
-            Integer pageNumber,
-            Integer size,
-            String orderBy,
-            String direction
-    );
+    List<MatchResponseDTO> getAll(MatchFilterRequestDTO matchFilterRequestDTO);
 
-    void deleteById(UUID id);
+    void deleteById(String id);
 }

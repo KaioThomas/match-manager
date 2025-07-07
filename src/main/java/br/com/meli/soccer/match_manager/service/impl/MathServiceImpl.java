@@ -1,18 +1,22 @@
 package br.com.meli.soccer.match_manager.service.impl;
 
 import br.com.meli.soccer.match_manager.model.dto.request.MatchRequestDTO;
+import br.com.meli.soccer.match_manager.model.dto.request.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.model.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.model.entity.Match;
 import br.com.meli.soccer.match_manager.model.entity.Stadium;
 import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
+import br.com.meli.soccer.match_manager.model.exception.NotFoundException;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.repository.MatchRepository;
 import br.com.meli.soccer.match_manager.repository.StadiumRepository;
 import br.com.meli.soccer.match_manager.service.MatchService;
 import br.com.meli.soccer.match_manager.service.converter.MatchConverter;
 import br.com.meli.soccer.match_manager.service.validator.MatchValidator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,32 +33,68 @@ public class MathServiceImpl implements MatchService {
     private final MatchValidator matchValidator;
 
     @Override
+    @Transactional
     public MatchResponseDTO create(MatchRequestDTO matchRequestDTO) {
-        Club homeClub = this.clubRepository.findById(matchRequestDTO.homeClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
-        Club visitingClub = this.clubRepository.findById(matchRequestDTO.visitingClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
-        Stadium stadium = this.stadiumRepository.findById(matchRequestDTO.stadiumId()).orElseThrow(() -> new InvalidFieldsException("The stadium is invalid"));
-        Match match = MatchConverter.toEntity(matchRequestDTO, stadium, homeClub, visitingClub);
-        this.matchValidator.validate(match);
+        Match match = this.createMatchEntity(matchRequestDTO);
+        this.matchValidator.validateCreate(match);
         return MatchConverter.toResponseDTO(this.matchRepository.save(match));
     }
 
     @Override
+    @Transactional
     public MatchResponseDTO update(MatchRequestDTO matchRequestDTO) {
-        return null;
+        Match match = this.createMatchEntity(matchRequestDTO);
+
+        this.matchValidator.validateUpdate(match);
+        return MatchConverter.toResponseDTO(this.matchRepository.save(match));
     }
 
     @Override
-    public MatchResponseDTO getById(UUID id) {
-        return null;
+    @Transactional
+    public MatchResponseDTO getById(String id) {
+        Match match = this.matchRepository.findById(id).orElseThrow(() -> new NotFoundException("Match not found"));
+        return MatchConverter.toResponseDTO(match);
     }
 
     @Override
-    public List<MatchResponseDTO> getAll(UUID clubId, UUID stadiumId, Integer pageNumber, Integer size, String orderBy, String direction) {
-        return List.of();
+    @Transactional
+    public List<MatchResponseDTO> getAll(MatchFilterRequestDTO matchFilterRequestDTO) {
+
+        PageRequest pageRequest = PageRequest.of(
+                matchFilterRequestDTO.getPageNumber(),
+                matchFilterRequestDTO.getSize(),
+                Sort.Direction.valueOf(matchFilterRequestDTO.getDirection()),
+                matchFilterRequestDTO.getOrderBy()
+        );
+
+        Club homeClub = this.clubRepository.findById(matchFilterRequestDTO.getHomeClubId()).orElse(null);
+        Club visitingClub = this.clubRepository.findById(matchFilterRequestDTO.getVisitingClubId()).orElse(null);
+        Stadium stadium = this.stadiumRepository.findById(matchFilterRequestDTO.getStadiumId()).orElse(null);
+
+        if(homeClub != null && visitingClub != null && stadium != null) {
+            List<Match> matches = this.matchRepository.findAllByVisitingClubAndHomeClubAndStadium(visitingClub, homeClub, stadium, pageRequest);
+            return matches.stream()
+                    .map(MatchConverter::toResponseDTO)
+                    .toList();
+        }
+
+        return this.matchRepository.findAll(pageRequest)
+                .map(MatchConverter::toResponseDTO)
+                .toList();
     }
 
     @Override
-    public void deleteById(UUID id) {
+    @Transactional
+    public void deleteById(String id) {
+        this.matchValidator.validateMatchExists(id);
+        this.matchRepository.deleteById(id);
+    }
 
+    private Match createMatchEntity(MatchRequestDTO matchRequestDTO) {
+        Club homeClub = this.clubRepository.findById(matchRequestDTO.homeClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
+        Club visitingClub = this.clubRepository.findById(matchRequestDTO.visitingClubId()).orElseThrow(() -> new InvalidFieldsException("The club is invalid"));
+        Stadium stadium = this.stadiumRepository.findById(matchRequestDTO.stadiumId()).orElseThrow(() -> new InvalidFieldsException("The stadium is invalid"));
+
+        return MatchConverter.toEntity(matchRequestDTO, stadium, homeClub, visitingClub);
     }
 }

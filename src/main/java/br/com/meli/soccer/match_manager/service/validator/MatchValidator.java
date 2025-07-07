@@ -1,10 +1,9 @@
 package br.com.meli.soccer.match_manager.service.validator;
 
-import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.model.entity.Match;
 import br.com.meli.soccer.match_manager.model.exception.CreationConflictException;
 import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
-import br.com.meli.soccer.match_manager.repository.ClubRepository;
+import br.com.meli.soccer.match_manager.model.exception.NotFoundException;
 import br.com.meli.soccer.match_manager.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +17,28 @@ import java.util.List;
 public class MatchValidator {
 
     private final MatchRepository matchRepository;
-    private final ClubRepository clubRepository;
 
-    public void validate(Match match) {
+    public void validateCreate(Match match) {
         validateClubsAreEquals(match);
         validateMatchResultIsLowerThanZero(match);
         validateClubsAreInvalid(match);
         validateClubAlreadyHasMatch(match);
         validateStadiumHasMatchAtSameDate(match);
+    }
+
+    public void validateUpdate(Match match) {
+        validateClubsAreEquals(match);
+        validateMatchResultIsLowerThanZero(match);
+        validateClubsAreInvalid(match);
+        validateClubAlreadyHasMatch(match);
+        validateStadiumHasMatchAtSameDate(match);
+        validateMatchExists(match.getId());
+    }
+
+    public void validateMatchExists(String id) {
+        boolean matchExists = this.matchRepository.existsById(id);
+
+        if(!matchExists) throw new NotFoundException("Match not found");
     }
 
     public void validateClubsAreEquals(Match match) {
@@ -42,16 +55,17 @@ public class MatchValidator {
 
     public void validateClubsAreInvalid(Match match) {
 
-        Club visitingClub = this.clubRepository.findById(match.getVisitingClub().getId()).orElse(null);
-        Club homeClub = this.clubRepository.findById(match.getHomeClub().getId()).orElse(null);
-
-        if(visitingClub == null || homeClub == null) {
+        if(match.getVisitingClub() == null || match.getHomeClub() == null) {
             throw new InvalidFieldsException("The club is invalid");
+        }
+
+        if(match.getHomeClub().getActive().equals(false) || match.getVisitingClub().getActive().equals(false)) {
+            throw new InvalidFieldsException("The club is not active");
         }
 
         LocalDate matchDate = match.getDateTime().toLocalDate();
 
-        if(matchDate.isBefore(visitingClub.getCreationDate()) || matchDate.isBefore(homeClub.getCreationDate())) {
+        if(matchDate.isBefore(match.getVisitingClub().getCreationDate()) || matchDate.isBefore(match.getHomeClub().getCreationDate())) {
             throw new CreationConflictException("The match date cannot be before the clubs creation date");
         }
     }
