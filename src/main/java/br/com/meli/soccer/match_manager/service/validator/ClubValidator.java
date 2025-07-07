@@ -23,13 +23,13 @@ public class ClubValidator {
         validateClcubHasMatchBeforeCreationDate(club);
     }
 
-    private void validateClubAcronymState(Club club) {
+    public void validateClubAcronymState(Club club) {
         if(!AcronymStatesEnum.isValidAcronym(club.getStateAcronym())) {
             throw new InvalidFieldsException(ExceptionsEnum.NON_EXISTENT_ACRONYM_STATE.getValue());
         }
     }
 
-    private void validateClubAlreadyExists(Club club) {
+    public void validateClubAlreadyExists(Club club) {
 
         clubRepository.findByNameAndStateAcronym(
                 club.getName(),
@@ -44,7 +44,7 @@ public class ClubValidator {
         );
     }
 
-    private void validateClcubHasMatchBeforeCreationDate(Club club) {
+    public void validateClcubHasMatchBeforeCreationDate(Club club) {
         boolean existsMatchBeforeCreationDate = this.matchRepository.existsClubMatchBeforeCreationDate(club.getId(), club.getCreationDate()).orElse(0) > 0;
 
         if(existsMatchBeforeCreationDate) throw new CreationConflictException("The creation date cannot be after a match");
