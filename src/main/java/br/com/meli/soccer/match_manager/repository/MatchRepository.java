@@ -1,10 +1,8 @@
 package br.com.meli.soccer.match_manager.repository;
 
-import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.model.entity.Match;
-import br.com.meli.soccer.match_manager.model.entity.Stadium;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,11 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MatchRepository extends JpaRepository<Match, String> {
+public interface MatchRepository extends JpaRepository<Match, String>, JpaSpecificationExecutor<Match> {
 
     List<Match> findAllByHomeClubId(String id);
     List<Match> findAllByVisitingClubId(String id);
-    List<Match> findAllByVisitingClubAndHomeClubAndStadium(Club visitingClub, Club homeClub, Stadium stadium, PageRequest pageRequest);
 
     @Query(value = """
          SELECT 1 FROM football_match 

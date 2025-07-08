@@ -6,6 +6,7 @@ import br.com.meli.soccer.match_manager.model.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.model.entity.Club;
 import br.com.meli.soccer.match_manager.model.entity.Match;
 import br.com.meli.soccer.match_manager.model.entity.Stadium;
+import br.com.meli.soccer.match_manager.model.entity.specification.MatchSpecification;
 import br.com.meli.soccer.match_manager.model.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.model.exception.NotFoundException;
 import br.com.meli.soccer.match_manager.repository.ClubRepository;
@@ -17,10 +18,10 @@ import br.com.meli.soccer.match_manager.service.validator.MatchValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -67,18 +68,9 @@ public class MathServiceImpl implements MatchService {
                 matchFilterRequestDTO.getOrderBy()
         );
 
-        Club homeClub = this.clubRepository.findById(matchFilterRequestDTO.getHomeClubId()).orElse(null);
-        Club visitingClub = this.clubRepository.findById(matchFilterRequestDTO.getVisitingClubId()).orElse(null);
-        Stadium stadium = this.stadiumRepository.findById(matchFilterRequestDTO.getStadiumId()).orElse(null);
+        Specification<Match> matchSpecification = MatchSpecification.findAllMatchsByFilledFields(matchFilterRequestDTO);
 
-        if(homeClub != null && visitingClub != null && stadium != null) {
-            List<Match> matches = this.matchRepository.findAllByVisitingClubAndHomeClubAndStadium(visitingClub, homeClub, stadium, pageRequest);
-            return matches.stream()
-                    .map(MatchConverter::toResponseDTO)
-                    .toList();
-        }
-
-        return this.matchRepository.findAll(pageRequest)
+        return this.matchRepository.findAll(matchSpecification, pageRequest)
                 .map(MatchConverter::toResponseDTO)
                 .toList();
     }
