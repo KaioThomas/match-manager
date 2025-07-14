@@ -1,8 +1,10 @@
 package br.com.meli.soccer.match_manager.match.service;
 
+import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +21,6 @@ public interface MatchService {
     List<MatchResponseDTO> getAll(MatchFilterRequestDTO matchFilterRequestDTO, Pageable pageable);
 
     void deleteById(String id);
+
+    MatchHistoryResponse getMatchHistory(String id, ClubTypeEnum clubRequiredActing);
 }

@@ -1,9 +1,13 @@
 package br.com.meli.soccer.match_manager.match.service.impl;
 
+import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.match.dto.OpponentDTO;
+import br.com.meli.soccer.match_manager.match.dto.MatchHistoryDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.club.entity.Club;
 import br.com.meli.soccer.match_manager.match.entity.Match;
@@ -22,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.*;
@@ -82,6 +87,36 @@ public class MathServiceImpl implements MatchService {
     public void deleteById(String id) {
         this.matchValidator.validateMatchExists(id);
         this.matchRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public MatchHistoryResponse getMatchHistory(String clubId, ClubTypeEnum clubRequiredActing) {
+        List<MatchHistoryDTO> matchHistoryDTOS = this.getTotalCubRetrospect(clubId, clubRequiredActing);
+        return new MatchHistoryResponse(matchHistoryDTOS);
+    }
+
+    private List<MatchHistoryDTO> getTotalCubRetrospect(String clubId, ClubTypeEnum clubRequiredActing) {
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchHistory(clubId, clubRequiredActing));
+
+        HashMap<String, MatchHistoryDTO> totalRetrospect = new HashMap<>();
+
+        for(Match match : matches) {
+            boolean playedAtHome = match.getHomeClub().getId().equals(clubId);
+
+            String opponentId = playedAtHome ? match.getVisitingClub().getId() : match.getHomeClub().getId();
+            String opponentName = playedAtHome ? match.getVisitingClub().getName() : match.getHomeClub().getName();
+
+            int goalsConceded = playedAtHome ? match.getVisitingClubGoals() : match.getHomeClubGoals();
+            int goalsScored = playedAtHome ? match.getHomeClubGoals() : match.getVisitingClubGoals();
+
+            totalRetrospect.computeIfAbsent(opponentId, _ -> new MatchHistoryDTO(new OpponentDTO(opponentId, opponentName)))
+                    .generateResult(goalsScored, goalsConceded);
+        }
+
+        return totalRetrospect.values()
+                .stream()
+                .toList();
     }
 
     private Match createMatchEntity(MatchRequestDTO matchRequestDTO) {

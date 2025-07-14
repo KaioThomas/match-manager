@@ -1,9 +1,10 @@
 package br.com.meli.soccer.match_manager.match.controller;
 
+import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
-import br.com.meli.soccer.match_manager.match.dto.request.MatchRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import jakarta.validation.Valid;
@@ -66,5 +67,16 @@ public class MatchController {
             final Pageable pageable
     ) {
         return this.matchService.getAll(matchFilterRequestDTO, pageable);
+    }
+
+    @GetMapping("/history/{clubId}")
+    public MatchHistoryResponse getMatchHistory(
+            @PathVariable
+            final String clubId,
+
+            @RequestParam(required = false)
+            final ClubTypeEnum clubRequiredActing
+    ) {
+        return this.matchService.getMatchHistory(clubId, clubRequiredActing);
     }
 }
