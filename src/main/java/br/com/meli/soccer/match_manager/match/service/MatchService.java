@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.match.service;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
@@ -22,5 +23,7 @@ public interface MatchService {
 
     void deleteById(String id);
 
-    MatchHistoryResponse getMatchHistory(String id, ClubTypeEnum clubRequiredActing);
+    MatchHistoryResponse getMatchHistoryByOpponent(String id, ClubTypeEnum clubRequiredActing, String opponendId);
+
+    MatchTotalRetrospect getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
 }

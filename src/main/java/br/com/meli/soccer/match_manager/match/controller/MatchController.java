@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.match.controller;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
@@ -8,6 +9,7 @@ import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -69,14 +71,29 @@ public class MatchController {
         return this.matchService.getAll(matchFilterRequestDTO, pageable);
     }
 
-    @GetMapping("/history/{clubId}")
-    public MatchHistoryResponse getMatchHistory(
-            @PathVariable
+    @GetMapping("/retrospect")
+    public MatchHistoryResponse getMatchRetrospectByOpponent(
+            @RequestParam
+            final String clubId,
+
+            @RequestParam(required = false)
+            final String opponentId,
+
+            @RequestParam(required = false)
+            final ClubTypeEnum clubRequiredActing
+    ) {
+        return this.matchService.getMatchHistoryByOpponent(clubId, clubRequiredActing, opponentId);
+    }
+
+    @GetMapping("/retrospect/all")
+    public MatchTotalRetrospect getMatchRetrospect(
+            @NotNull
+            @RequestParam
             final String clubId,
 
             @RequestParam(required = false)
             final ClubTypeEnum clubRequiredActing
     ) {
-        return this.matchService.getMatchHistory(clubId, clubRequiredActing);
+        return this.matchService.getMatchRetrospect(clubId, clubRequiredActing);
     }
 }

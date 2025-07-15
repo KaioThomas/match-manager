@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.match.service.impl;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.OpponentDTO;
 import br.com.meli.soccer.match_manager.match.dto.MatchHistoryDTO;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
@@ -91,13 +92,36 @@ public class MathServiceImpl implements MatchService {
 
     @Override
     @Transactional
-    public MatchHistoryResponse getMatchHistory(String clubId, ClubTypeEnum clubRequiredActing) {
-        List<MatchHistoryDTO> matchHistoryDTOS = this.getTotalCubRetrospect(clubId, clubRequiredActing);
+    public MatchHistoryResponse getMatchHistoryByOpponent(String clubId, ClubTypeEnum clubRequiredActing, String opponendId) {
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, clubRequiredActing, opponendId));
+        List<MatchHistoryDTO> matchHistoryDTOS = this.getClubRetrospectByOpponent(matches, clubId);
         return new MatchHistoryResponse(matchHistoryDTOS);
     }
 
-    private List<MatchHistoryDTO> getTotalCubRetrospect(String clubId, ClubTypeEnum clubRequiredActing) {
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchHistory(clubId, clubRequiredActing));
+    @Override
+    @Transactional
+    public MatchTotalRetrospect getMatchRetrospect(String clubId, ClubTypeEnum clubRequiredActing) {
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, clubRequiredActing, null));
+        return this.getTotalClubRetrospect(matches, clubId);
+    }
+
+    private MatchTotalRetrospect getTotalClubRetrospect(List<Match> matches, String clubId) {
+        MatchTotalRetrospect matchTotalRetrospect = new MatchTotalRetrospect();
+
+        for(Match match : matches) {
+            boolean playedAtHome = match.getHomeClub().getId().equals(clubId);
+
+            int goalsConceded = playedAtHome ? match.getVisitingClubGoals() : match.getHomeClubGoals();
+            int goalsScored = playedAtHome ? match.getHomeClubGoals() : match.getVisitingClubGoals();
+
+            matchTotalRetrospect.generateResult(goalsScored, goalsConceded);
+        }
+
+        return matchTotalRetrospect;
+    }
+
+
+    private List<MatchHistoryDTO> getClubRetrospectByOpponent(List<Match> matches, String clubId) {
 
         HashMap<String, MatchHistoryDTO> totalRetrospect = new HashMap<>();
 
