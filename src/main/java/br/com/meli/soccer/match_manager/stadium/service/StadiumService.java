@@ -1,7 +1,6 @@
 package br.com.meli.soccer.match_manager.stadium.service;
 
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumCreateRequest;
-import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumRequestDTO;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumUpdateRequest;
 import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
 import org.springframework.data.domain.Pageable;

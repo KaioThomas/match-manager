@@ -36,7 +36,7 @@ public class MatchController {
     }
 
     @PutMapping
-    public MatchResponseDTO create(
+    public MatchResponseDTO update(
             @RequestBody
             @Valid
             final MatchUpdateRequest matchUpdateRequest

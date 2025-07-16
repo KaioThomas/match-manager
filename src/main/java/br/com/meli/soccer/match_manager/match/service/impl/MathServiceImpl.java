@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.match.service.impl;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.common.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.OpponentDTO;
 import br.com.meli.soccer.match_manager.match.dto.MatchHistoryDTO;
@@ -93,7 +94,8 @@ public class MathServiceImpl implements MatchService {
     @Override
     @Transactional
     public MatchHistoryResponse getMatchHistoryByOpponent(String clubId, ClubTypeEnum clubRequiredActing, String opponendId) {
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, clubRequiredActing, opponendId));
+        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), clubRequiredActing, opponendId));
         List<MatchHistoryDTO> matchHistoryDTOS = this.getClubRetrospectByOpponent(matches, clubId);
         return new MatchHistoryResponse(matchHistoryDTOS);
     }
@@ -101,7 +103,8 @@ public class MathServiceImpl implements MatchService {
     @Override
     @Transactional
     public MatchTotalRetrospect getMatchRetrospect(String clubId, ClubTypeEnum clubRequiredActing) {
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, clubRequiredActing, null));
+        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), clubRequiredActing, null));
         return this.getTotalClubRetrospect(matches, clubId);
     }
 
@@ -155,13 +158,13 @@ public class MathServiceImpl implements MatchService {
         }
 
         Stadium stadium = this.stadiumRepository.findById(matchRequestDTO.stadiumId())
-                .orElseThrow(() -> new NotFoundException(STADIUM_NOT_FOUND));
+                .orElseThrow(() -> new InvalidFieldsException(STADIUM_NOT_FOUND));
 
         Club visitingClub = this.clubRepository.findById(matchRequestDTO.visitingClubResult().id())
-                .orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
+                .orElseThrow(() -> new InvalidFieldsException(CLUB_NOT_FOUND));
 
         Club homeClub = this.clubRepository.findById(matchRequestDTO.homeClubResult().id()).
-                orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
+                orElseThrow(() -> new InvalidFieldsException(CLUB_NOT_FOUND));
 
         return MatchMapper.toEntity(matchRequestDTO, stadium, homeClub, visitingClub, match);
 

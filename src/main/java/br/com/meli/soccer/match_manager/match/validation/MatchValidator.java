@@ -43,11 +43,11 @@ public class MatchValidator {
     public void validateClubsAreInvalid(Match match) {
 
         if(match.getVisitingClub() == null || match.getHomeClub() == null) {
-            throw new InvalidFieldsException(INVALID_CLUB);
+            throw new CreationConflictException(INVALID_CLUB);
         }
 
         if(match.getHomeClub().getActive().equals(false) || match.getVisitingClub().getActive().equals(false)) {
-            throw new InvalidFieldsException(INACTIVE_CLUB);
+            throw new CreationConflictException(INACTIVE_CLUB);
         }
 
         LocalDate matchDate = match.getDateTime().toLocalDate();
