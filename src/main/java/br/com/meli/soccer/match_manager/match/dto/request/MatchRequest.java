@@ -4,7 +4,7 @@ import br.com.meli.soccer.match_manager.club.dto.request.ClubResultDTO;
 
 import java.time.LocalDateTime;
 
-public interface MatchRequestDTO {
+public interface MatchRequest {
         ClubResultDTO homeClubResult();
         ClubResultDTO visitingClubResult();
         String stadiumId();

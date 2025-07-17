@@ -1,12 +1,13 @@
 package br.com.meli.soccer.match_manager.match.controller;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
-import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
+import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
-import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +28,7 @@ public class MatchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MatchResponseDTO create(
+    public MatchResponse create(
             @RequestBody
             @Valid
             final MatchCreateRequest matchCreateRequest
@@ -36,7 +37,7 @@ public class MatchController {
     }
 
     @PutMapping
-    public MatchResponseDTO update(
+    public MatchResponse update(
             @RequestBody
             @Valid
             final MatchUpdateRequest matchUpdateRequest
@@ -54,7 +55,7 @@ public class MatchController {
     }
 
     @GetMapping("/{id}")
-    public MatchResponseDTO getById(
+    public MatchResponse getById(
             @PathVariable
             final String id
     ) {
@@ -62,17 +63,17 @@ public class MatchController {
     }
 
     @GetMapping("/findAll")
-    public List<MatchResponseDTO> getAll(
+    public List<MatchResponse> getAll(
             @ModelAttribute
-            final MatchFilterRequestDTO matchFilterRequestDTO,
+            final MatchFilterRequest matchFilterRequest,
 
             final Pageable pageable
     ) {
-        return this.matchService.getAll(matchFilterRequestDTO, pageable);
+        return this.matchService.getAll(matchFilterRequest, pageable);
     }
 
-    @GetMapping("/retrospect")
-    public MatchHistoryResponse getMatchRetrospectByOpponent(
+    @GetMapping("/retrospect/total")
+    public List<RetrospectByOpponentResponse> getTotalRetrospect(
             @RequestParam
             final String clubId,
 
@@ -82,11 +83,11 @@ public class MatchController {
             @RequestParam(required = false)
             final ClubTypeEnum clubRequiredActing
     ) {
-        return this.matchService.getMatchHistoryByOpponent(clubId, clubRequiredActing, opponentId);
+        return this.matchService.getTotalRetrospect(clubId, clubRequiredActing, opponentId);
     }
 
-    @GetMapping("/retrospect/all")
-    public MatchTotalRetrospect getMatchRetrospect(
+    @GetMapping("/retrospect")
+    public ClubTotalRetrospectResponse getRetrospectByOpponent(
             @NotNull
             @RequestParam
             final String clubId,

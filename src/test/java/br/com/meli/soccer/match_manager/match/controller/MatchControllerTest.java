@@ -9,7 +9,7 @@ import br.com.meli.soccer.match_manager.factory.MatchDataFactory;
 import br.com.meli.soccer.match_manager.factory.StadiumDataFactory;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
 import br.com.meli.soccer.match_manager.match.repository.MatchRepository;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.MultiValueMap;
@@ -89,10 +88,10 @@ class MatchControllerTest {
     private StadiumResponseDTO horizonteAzulStadium;
     private StadiumResponseDTO solarDasPalmeirasStadium;
 
-    private MatchResponseDTO atleticoVsGremioAtArenaPampaMatch;
-    private MatchResponseDTO gremioAVsAtleticoAtArenaPampaMatch;
-    private MatchResponseDTO fenixVsGremio2AtArenaPampaMatch;
-    private MatchResponseDTO fenixVsAtleticoAtSolarDasPalmeirasMatch;
+    private MatchResponse atleticoVsGremioAtArenaPampaMatch;
+    private MatchResponse gremioAVsAtleticoAtArenaPampaMatch;
+    private MatchResponse fenixVsGremio2AtArenaPampaMatch;
+    private MatchResponse fenixVsAtleticoAtSolarDasPalmeirasMatch;
 
     @Test
     void test_shouldGetAMatch_and_return_200() throws Exception {
@@ -111,8 +110,8 @@ class MatchControllerTest {
         MvcResult getClubMvcResult = mockMvc.perform(get(basePath + "/findAll")
                 .params(MultiValueMap.fromSingleValue(params))
         ).andReturn();
-        MatchResponseDTO[] matchResponseDTO = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), MatchResponseDTO[].class);
-        Assertions.assertEquals(expectedMatches, matchResponseDTO.length);
+        MatchResponse[] matchResponse = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), MatchResponse[].class);
+        Assertions.assertEquals(expectedMatches, matchResponse.length);
     }
 
     @Test
@@ -162,12 +161,12 @@ class MatchControllerTest {
         mockMvc.perform(post(basePath).contentType(MediaType.APPLICATION_JSON).content(clubRequestJson))
                 .andExpect(status().isCreated())
                 .andExpect(result -> {
-                    MatchResponseDTO matchResponseDTO =  objectMapper.readValue(result.getResponse().getContentAsString(), MatchResponseDTO.class);
+                    MatchResponse matchResponse =  objectMapper.readValue(result.getResponse().getContentAsString(), MatchResponse.class);
 
-                    Assertions.assertEquals(matchResponseDTO.dateTime(), matchCreateRequest.dateTime());
-                    Assertions.assertEquals(matchResponseDTO.stadium().id(), matchCreateRequest.stadiumId());
-                    Assertions.assertEquals(matchResponseDTO.homeClub().id(), matchCreateRequest.homeClubResult().id());
-                    Assertions.assertEquals(matchResponseDTO.visitingClub().id(), matchCreateRequest.visitingClubResult().id());
+                    Assertions.assertEquals(matchResponse.dateTime(), matchCreateRequest.dateTime());
+                    Assertions.assertEquals(matchResponse.stadium().id(), matchCreateRequest.stadiumId());
+                    Assertions.assertEquals(matchResponse.homeClub().id(), matchCreateRequest.homeClubResult().id());
+                    Assertions.assertEquals(matchResponse.visitingClub().id(), matchCreateRequest.visitingClubResult().id());
                 });
     }
 
@@ -248,14 +247,10 @@ class MatchControllerTest {
 
     Stream<Arguments> searchMatchByFilters() {
 
-        Map<String, String> paramsByHomeClubId = Map.of("homeClubId", fenixMetropolitanaClub.id());
-        Map<String, String> paramsByStadiumId = Map.of("stadiumId", arenaPampaStadium.id());
-        Map<String, String> paramsByVisitingClubId = Map.of("visitingClubId", gremio2Club.id());
+        Map<String, String> paramsByHomeClubId = Map.of("clubId", fenixMetropolitanaClub.id());
 
         return Stream.of(
                 Arguments.of(paramsByHomeClubId, 2),
-                Arguments.of(paramsByVisitingClubId, 1),
-                Arguments.of(paramsByStadiumId, 3),
                 Arguments.of(Map.of(), 4)
         );
     }

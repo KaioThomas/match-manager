@@ -1,29 +1,32 @@
 package br.com.meli.soccer.match_manager.match.service;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
-import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
+import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
-import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
+import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface MatchService {
 
-    MatchResponseDTO create(MatchCreateRequest matchCreateRequest);
+    MatchResponse create(MatchCreateRequest matchCreateRequest);
 
-    MatchResponseDTO update(MatchUpdateRequest matchUpdateRequest);
+    MatchResponse update(MatchUpdateRequest matchUpdateRequest);
 
-    MatchResponseDTO getById(String id);
+    MatchResponse getById(String id);
 
-    List<MatchResponseDTO> getAll(MatchFilterRequestDTO matchFilterRequestDTO, Pageable pageable);
+    List<MatchResponse> getAll(MatchFilterRequest matchFilterRequest, Pageable pageable);
 
     void deleteById(String id);
 
-    MatchHistoryResponse getMatchHistoryByOpponent(String id, ClubTypeEnum clubRequiredActing, String opponendId);
+    List<RetrospectByOpponentResponse> getTotalRetrospect(String id, ClubTypeEnum clubRequiredActing, String opponendId);
 
     MatchTotalRetrospect getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
+    ClubTotalRetrospectResponse getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
 }

@@ -21,4 +21,4 @@ public record MatchCreateRequest(
         @NotNull
         @PastOrPresent
         LocalDateTime dateTime
-) implements MatchRequestDTO { }
+) implements MatchRequest { }

@@ -5,7 +5,7 @@ import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
 
 import java.time.LocalDateTime;
 
-public record MatchResponseDTO(
+public record MatchResponse(
         String id,
         ClubResponseDTO homeClub,
         ClubResponseDTO visitingClub,
