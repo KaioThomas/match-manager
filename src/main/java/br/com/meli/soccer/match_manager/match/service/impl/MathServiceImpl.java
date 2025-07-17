@@ -2,10 +2,10 @@ package br.com.meli.soccer.match_manager.match.service.impl;
 
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
 import br.com.meli.soccer.match_manager.common.exception.InvalidFieldsException;
-import br.com.meli.soccer.match_manager.match.dto.MatchTotalRetrospect;
-import br.com.meli.soccer.match_manager.match.dto.OpponentDTO;
-import br.com.meli.soccer.match_manager.match.dto.MatchHistoryDTO;
 import br.com.meli.soccer.match_manager.match.dto.ClubData;
+import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
+import br.com.meli.soccer.match_manager.match.dto.Opponent;
+import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchRequest;
@@ -29,8 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.*;
 
@@ -108,8 +107,46 @@ public class MathServiceImpl implements MatchService {
         return this.getTotalClubRetrospect(matches, clubId);
     }
 
-    private MatchTotalRetrospect getTotalClubRetrospect(List<Match> matches, String clubId) {
-        MatchTotalRetrospect matchTotalRetrospect = new MatchTotalRetrospect();
+    @Override
+    public List<RankingResponse> getRanking() {
+        List<RankingResponse> rankingResponses = defineRanking();
+        rankingResponses.sort(Comparator.comparing(RankingResponse::getTotalScore));
+        return rankingResponses;
+
+    }
+
+    private List<RankingResponse> defineRanking() {
+        List<Club> clubs = this.clubRepository.findAll();
+
+        if(clubs.isEmpty()) {
+            return List.of();
+        }
+
+        Map<String,RankingResponse> rankingResponseMap = new HashMap<>();
+
+        for(Club club : clubs) {
+            List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), null, null));
+
+            if(matches.isEmpty()) {
+                continue;
+            }
+
+            ClubTotalRetrospectResponse totalClubRetrospect = getTotalClubRetrospect(matches, club.getId());
+            String clubId = club.getId();
+            ClubData clubData = new ClubData(clubId, club.getName());
+
+            rankingResponseMap.computeIfAbsent(clubId, _ -> new RankingResponse(clubData))
+                    .generateRanking(
+                            totalClubRetrospect.getTotalVictories(),
+                            totalClubRetrospect.getTotalDraws(),
+                            totalClubRetrospect.getGoalsScored(),
+                            matches.size()
+                    );
+        }
+
+        return new ArrayList<>(rankingResponseMap.values());
+    }
+
     private ClubTotalRetrospectResponse getTotalClubRetrospect(List<Match> matches, String clubId) {
         ClubTotalRetrospectResponse clubTotalRetrospectResponse = new ClubTotalRetrospectResponse();
 

@@ -97,4 +97,9 @@ public class MatchController {
     ) {
         return this.matchService.getMatchRetrospect(clubId, clubRequiredActing);
     }
+
+    @GetMapping("/ranking")
+    public List<RankingResponse> getRanking() {
+        return this.matchService.getRanking();
+    }
 }

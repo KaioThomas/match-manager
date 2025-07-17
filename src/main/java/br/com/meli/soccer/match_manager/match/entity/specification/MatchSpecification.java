@@ -2,7 +2,7 @@ package br.com.meli.soccer.match_manager.match.entity.specification;
 
 import br.com.meli.soccer.match_manager.club.entity.Club;
 import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
-import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequestDTO;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.entity.Match;
 import br.com.meli.soccer.match_manager.match.entity.specification.predicate.MatchPredicateBuilder;
 import lombok.AccessLevel;
@@ -12,12 +12,11 @@ import org.springframework.data.jpa.domain.Specification;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MatchSpecification {
 
-    public static Specification<Match> matchsByFilledFields(MatchFilterRequestDTO matchFilterRequestDTO) {
+    public static Specification<Match> matchsByFilledFields(MatchFilterRequest matchFilterRequest) {
         return (root, cq, cb) ->
                 new MatchPredicateBuilder<>(root, cb)
-                    .equalsVisitingClubId(matchFilterRequestDTO.visitingClubId())
-                    .equalsHomeClubId(matchFilterRequestDTO.homeClubId())
-                    .equalsStadiumId(matchFilterRequestDTO.stadiumId()).build();
+                    .findClub(matchFilterRequest.clubId())
+                    .build();
     }
 
     public static Specification<Match> creationDateAfterClubMatch(Club club) {

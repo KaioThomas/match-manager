@@ -5,9 +5,8 @@ import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectRe
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchHistoryResponse;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchResponseDTO;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -27,6 +26,7 @@ public interface MatchService {
 
     List<RetrospectByOpponentResponse> getTotalRetrospect(String id, ClubTypeEnum clubRequiredActing, String opponendId);
 
-    MatchTotalRetrospect getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
     ClubTotalRetrospectResponse getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
+
+    List<RankingResponse> getRanking();
 }
