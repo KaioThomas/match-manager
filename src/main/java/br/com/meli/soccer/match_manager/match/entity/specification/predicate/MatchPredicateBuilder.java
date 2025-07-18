@@ -92,6 +92,18 @@ public class MatchPredicateBuilder<T> {
         return this;
     }
 
+    public MatchPredicateBuilder<T> equalsClubAndClub(String idClubA, String idClubB) {
+        if(idClubA != null && idClubB != null) {
+            predicates.add(
+                    criteriaBuilder.or(
+                            criteriaBuilder.and(equalsVisitingClubIdPredicate(idClubA), equalsHomeClubIdPredicate(idClubB)),
+                            criteriaBuilder.and(equalsVisitingClubIdPredicate(idClubB), equalsHomeClubIdPredicate(idClubA))
+                    )
+            );
+        }
+        return this;
+    }
+
     private Predicate equalsVisitingClubIdPredicate(String id) {
         return criteriaBuilder.equal(root.get(VISITING_CLUB).get(ID), id);
     }

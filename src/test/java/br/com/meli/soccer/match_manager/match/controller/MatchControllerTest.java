@@ -115,33 +115,55 @@ class MatchControllerTest {
     }
 
     @Test
-    void test_shouldGetAllRetrospectByOpponent_and_return_200() throws Exception {
+    void test_shouldGetDirectConfrontations_and_return_200() throws Exception {
 
-        mockMvc.perform(get(basePath + "/retrospect/opponents")
-                .param("clubId", atleticoClub.id())
-                .param("opponentId", gremioClub.id())
-                .param("clubRequiredActing", ClubTypeEnum.HOME.toString())
+        mockMvc.perform(get(basePath + "/retrospect/direct-confrontations")
+                .param("clubA_id", atleticoClub.id())
+                .param("clubB_id", gremioClub.id())
         ).andExpect(status().isOk());
     }
 
     @Test
-    void test_shouldGetAllRetrospectByOpponentWithAClubthatDoesnotExists_and_return_404() throws Exception {
+    void test_shouldGetDirectConfrontations_and_return_404() throws Exception {
 
-        mockMvc.perform(get(basePath + "/retrospect/opponents")
-                .param("clubId", UUID.randomUUID().toString())
-                .param("opponentId", gremioClub.id())
+        mockMvc.perform(get(basePath + "/retrospect/direct-confrontations")
+                .param("clubA_id", UUID.randomUUID().toString())
+                .param("clubB_id", gremioClub.id())
         ).andExpect(status().isNotFound());
     }
 
-    @ParameterizedTest
-    @MethodSource("invalidMatchCreateRequest")
-    void test_shouldTryToCreateAInvalidMatch_and_return_400(MatchCreateRequest invalidMatchCreateRequest) throws Exception {
+    @Test
+    void test_shouldGetRetrospectByOpponents_and_return_200() throws Exception {
 
-        String clubRequestJson = objectMapper.writeValueAsString(invalidMatchCreateRequest);
-
-        mockMvc.perform(post(basePath).contentType(MediaType.APPLICATION_JSON).content(clubRequestJson))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(get(basePath + "/retrospect/opponents")
+                .param("clubId", atleticoClub.id())
+        ).andExpect(status().isOk());
     }
+
+    @Test
+    void test_shouldGetRetrospectByOpponents_and_return_404() throws Exception {
+
+        mockMvc.perform(get(basePath + "/retrospect/opponents")
+                .param("clubId", UUID.randomUUID().toString())
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test_shouldGetGeneralRetrospect_and_return_200() throws Exception {
+
+        mockMvc.perform(get(basePath + "/retrospect/general")
+                .param("clubId", atleticoClub.id())
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void test_shouldGetGeneralRetrospect_and_return_404() throws Exception {
+
+        mockMvc.perform(get(basePath + "/retrospect/general")
+                .param("clubId", UUID.randomUUID().toString())
+        ).andExpect(status().isNotFound());
+    }
+
 
     @ParameterizedTest
     @MethodSource("conflictsMatchCreateRequest")

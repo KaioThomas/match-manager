@@ -2,16 +2,14 @@ package br.com.meli.soccer.match_manager.match.service.impl;
 
 import br.com.meli.soccer.match_manager.common.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.match.dto.ClubData;
+import br.com.meli.soccer.match_manager.match.dto.ClubSummary;
+import br.com.meli.soccer.match_manager.match.dto.GeneralRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
-import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
-import br.com.meli.soccer.match_manager.match.dto.Opponent;
-import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
-import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.*;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
 import br.com.meli.soccer.match_manager.club.entity.Club;
 import br.com.meli.soccer.match_manager.match.entity.Match;
 import br.com.meli.soccer.match_manager.match.validation.MatchValidator;
@@ -93,18 +91,40 @@ public class MathServiceImpl implements MatchService {
 
     @Override
     @Transactional
-    public List<RetrospectByOpponentResponse> getTotalRetrospect(String clubId, MatchActingFilter matchActingFilter, String opponentId) {
-        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), matchActingFilter.clubRequiredActing(), opponentId));
-        return this.getClubRetrospectByOpponent(matches, clubId);
+    public List<RetrospectByOpponent> getRetrospectByOpponents(String clubId, MatchActingFilter matchActingFilter) {
+        if(!this.clubRepository.existsById(clubId)) {
+            throw new NotFoundException(CLUB.NOT_FOUND);
+        }
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, matchActingFilter.clubRequiredActing()));
+        return this.createRetrospectByOpponentResponse(matches, clubId);
     }
 
     @Override
     @Transactional
-    public ClubTotalRetrospectResponse getMatchRetrospectByOpponent(String clubId, MatchActingFilter matchActingFilter) {
-        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), matchActingFilter.clubRequiredActing(), null));
-        return this.getTotalClubRetrospect(matches, clubId);
+    public GeneralRetrospect getGeneralRetrospect(String clubId, MatchActingFilter matchActingFilter) {
+        if(!this.clubRepository.existsById(clubId)) {
+            throw new NotFoundException(CLUB.NOT_FOUND);
+        }
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(clubId, matchActingFilter.clubRequiredActing()));
+        return this.createGeneralRetrospectResponse(matches, clubId);
+    }
+
+    @Override
+    @Transactional
+    public DirectConfrontationsResponse getDirectConfrontations(String idClubA, String idClubB) {
+        Club clubA = this.clubRepository.findById(idClubA).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
+        Club clubB = this.clubRepository.findById(idClubB).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
+
+        ClubSummary clubASummary = new ClubSummary();
+        clubASummary.setId(clubA.getId());
+        clubASummary.setName(clubA.getName());
+
+        ClubSummary clubBSummary = new ClubSummary();
+        clubBSummary.setId(clubB.getId());
+        clubBSummary.setName(clubB.getName());
+
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchDirectConfrontationsRetrospect(idClubA, idClubB));
+        return createDirectConfrontationsRetrospectResponse(matches, clubASummary, clubBSummary);
     }
 
     @Override
@@ -125,13 +145,13 @@ public class MathServiceImpl implements MatchService {
         Map<String,RankingResponse> rankingResponseMap = new HashMap<>();
 
         for(Club club : clubs) {
-            List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), null, null));
+            List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), null));
 
             if(matches.isEmpty()) {
                 continue;
             }
 
-            ClubTotalRetrospectResponse totalClubRetrospect = getTotalClubRetrospect(matches, club.getId());
+            GeneralRetrospect totalClubRetrospect = createGeneralRetrospectResponse(matches, club.getId());
             String clubId = club.getId();
             ClubData clubData = new ClubData(clubId, club.getName());
 
@@ -147,8 +167,8 @@ public class MathServiceImpl implements MatchService {
         return new ArrayList<>(rankingResponseMap.values());
     }
 
-    private ClubTotalRetrospectResponse getTotalClubRetrospect(List<Match> matches, String clubId) {
-        ClubTotalRetrospectResponse clubTotalRetrospectResponse = new ClubTotalRetrospectResponse();
+    private GeneralRetrospect createGeneralRetrospectResponse(List<Match> matches, String clubId) {
+        GeneralRetrospect generalRetrospect = new GeneralRetrospect();
 
         for(Match match : matches) {
             boolean playedAtHome = match.getHomeClub().getId().equals(clubId);
@@ -156,16 +176,30 @@ public class MathServiceImpl implements MatchService {
             int goalsConceded = playedAtHome ? match.getVisitingClubGoals() : match.getHomeClubGoals();
             int goalsScored = playedAtHome ? match.getHomeClubGoals() : match.getVisitingClubGoals();
 
-            clubTotalRetrospectResponse.generateResult(goalsScored, goalsConceded);
+            generalRetrospect.generateResult(goalsScored, goalsConceded);
         }
 
-        return clubTotalRetrospectResponse;
+        return generalRetrospect;
+    }
+
+    private DirectConfrontationsResponse createDirectConfrontationsRetrospectResponse(List<Match> matches, ClubSummary clubA, ClubSummary clubB) {
+        for(Match match : matches) {
+            boolean isAHomeClub = match.getHomeClub().getId().equals(clubA.getId());
+
+            int goalsClubScoredA = isAHomeClub ? match.getHomeClubGoals() : match.getVisitingClubGoals();
+            int goalsClubScoredB = isAHomeClub ? match.getVisitingClubGoals() : match.getHomeClubGoals();
+
+            clubA.generateResult(goalsClubScoredA, goalsClubScoredB);
+            clubB.generateResult(goalsClubScoredB, goalsClubScoredA);
+        }
+
+        return new DirectConfrontationsResponse(clubA, clubB, matches.stream().map(MatchMapper::toResponseDTO).toList());
     }
 
 
-    private List<RetrospectByOpponentResponse> getClubRetrospectByOpponent(List<Match> matches, String clubId) {
+    private List<RetrospectByOpponent> createRetrospectByOpponentResponse(List<Match> matches, String clubId) {
 
-        HashMap<String, RetrospectByOpponentResponse> totalRetrospect = new HashMap<>();
+        HashMap<String, RetrospectByOpponent> totalRetrospect = new HashMap<>();
 
         for(Match match : matches) {
             boolean playedAtHome = match.getHomeClub().getId().equals(clubId);
@@ -176,7 +210,7 @@ public class MathServiceImpl implements MatchService {
             int goalsConceded = playedAtHome ? match.getVisitingClubGoals() : match.getHomeClubGoals();
             int goalsScored = playedAtHome ? match.getHomeClubGoals() : match.getVisitingClubGoals();
 
-            totalRetrospect.computeIfAbsent(opponentId, _ -> new RetrospectByOpponentResponse(new Opponent(opponentId, opponentName)))
+            totalRetrospect.computeIfAbsent(opponentId, _ -> new RetrospectByOpponent(new ClubData(opponentId, opponentName)))
                     .generateResult(goalsScored, goalsConceded);
         }
 

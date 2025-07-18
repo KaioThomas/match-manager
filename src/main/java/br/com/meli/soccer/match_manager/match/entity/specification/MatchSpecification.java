@@ -40,14 +40,10 @@ public class MatchSpecification {
                     .build();
     }
 
-    public static Specification<Match> matchRetrospect(String clubId, ClubTypeEnum clubActing, String opponentId) {
+    public static Specification<Match> matchRetrospect(String clubId, ClubTypeEnum clubActing) {
         return (root, cq, cb) -> {
 
             MatchPredicateBuilder<Match> matchPredicateBuilder = new MatchPredicateBuilder<>(root, cb);
-
-            if(opponentId != null) {
-                matchPredicateBuilder.findClub(opponentId);
-            }
 
             if(clubActing == null) {
                 matchPredicateBuilder.findClub(clubId);
@@ -59,6 +55,11 @@ public class MatchSpecification {
 
             return matchPredicateBuilder.build();
         };
+    }
+
+    public static Specification<Match> matchDirectConfrontationsRetrospect(String idClubA, String idClubB) {
+        return (root, cq, cb) ->
+                new MatchPredicateBuilder<>(root, cb).equalsClubAndClub(idClubA, idClubB).build();
     }
 
 }

@@ -1,13 +1,13 @@
 package br.com.meli.soccer.match_manager.match.controller;
 
+import br.com.meli.soccer.match_manager.common.constants.SchemaConstants.MATCH;
+import br.com.meli.soccer.match_manager.common.constants.SchemaConstants.CLUB;
+import br.com.meli.soccer.match_manager.match.dto.GeneralRetrospect;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
-import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
+import br.com.meli.soccer.match_manager.match.dto.response.*;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
-import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
-import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
-import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,7 +52,7 @@ public class MatchController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(
             @PathVariable
-            @Parameter(description = "id da partida a ser deletada", example = "08d9cf76-214b-4e40-8811-3b85b4fdad03")
+            @Parameter(description = MATCH.ID_DESC, example = MATCH.ID_EXAMPLE)
             final String id
     ) {
         this.matchService.deleteById(id);
@@ -62,7 +62,7 @@ public class MatchController {
     @GetMapping("/{id}")
     public MatchResponse getById(
             @PathVariable
-            @Parameter(description = "id da partida para busca", example = "08d9cf76-214b-4e40-8811-3b85b4fdad03")
+            @Parameter(description = MATCH.ID_DESC, example = MATCH.ID_EXAMPLE)
             final String id
     ) {
         return this.matchService.getById(id);
@@ -70,7 +70,7 @@ public class MatchController {
 
     @GetMapping("/findAll")
     public List<MatchResponse> getAll(
-            @Parameter(description = "id do clube", example = "e4446984-735d-4d18-a207-dad2632c2645")
+            @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             @RequestParam(required = false)
             final String clubId,
 
@@ -84,34 +84,43 @@ public class MatchController {
         return this.matchService.getAll(clubId, matchThrashingFilter, pageable);
     }
 
-    @GetMapping("/retrospect/total")
-    public List<RetrospectByOpponentResponse> getTotalRetrospect(
-            @NotEmpty
-            @Schema(description = "id do clube", example = "e4446984-735d-4d18-a207-dad2632c2645")
-            @RequestParam(required = false)
+    @GetMapping("/retrospect/general")
+    public GeneralRetrospect getGeneralRetrospect(
+            @NotNull
+            @RequestParam
+            @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             final String clubId,
-
-            @Schema(description = "id do clube oponente", example = "e4446984-735d-4d18-a207-dad2632c2645")
-            @RequestParam(required = false)
-            final String opponentId,
 
             @ParameterObject
             final MatchActingFilter matchActingFilter
     ) {
-        return this.matchService.getTotalRetrospect(clubId, matchActingFilter, opponentId);
+        return this.matchService.getGeneralRetrospect(clubId, matchActingFilter);
     }
 
     @GetMapping("/retrospect/opponents")
-    public ClubTotalRetrospectResponse getRetrospectByOpponent(
-            @NotNull
-            @RequestParam
-            @Schema(description = "id do clube", example = "e4446984-735d-4d18-a207-dad2632c2645")
+    public List<RetrospectByOpponent> getRetrospectByOpponents(
+            @NotEmpty
+            @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
+            @RequestParam(required = false)
             final String clubId,
 
             @ParameterObject
             final MatchActingFilter matchActingFilter
     ) {
-        return this.matchService.getMatchRetrospectByOpponent(clubId, matchActingFilter);
+        return this.matchService.getRetrospectByOpponents(clubId, matchActingFilter);
+    }
+
+    @GetMapping("/retrospect/direct-confrontations")
+    public DirectConfrontationsResponse getDirectConfrontations(
+            @NotEmpty
+            @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
+            final String clubA_id,
+
+            @NotEmpty
+            @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
+            final String clubB_id
+    ) {
+        return this.matchService.getDirectConfrontations(clubA_id, clubB_id);
     }
 
     @GetMapping("/ranking")

@@ -1,4 +1,4 @@
-package br.com.meli.soccer.match_manager.match.dto.response;
+package br.com.meli.soccer.match_manager.match.dto;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClubTotalRetrospectResponse {
+public class GeneralRetrospect {
     private int totalVictories;
     private int totalDraws;
     private int totalDefeats;
