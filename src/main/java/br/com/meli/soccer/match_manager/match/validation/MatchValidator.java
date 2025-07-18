@@ -31,29 +31,29 @@ public class MatchValidator {
     public void validateMatchExists(String id) {
         boolean matchExists = this.matchRepository.existsById(id);
 
-        if(!matchExists) throw new NotFoundException(MATCH_NOT_FOUND);
+        if(!matchExists) throw new NotFoundException(MATCH.NOT_FOUND);
     }
 
     public void validateClubsAreEquals(Match match) {
         if(match.getHomeClub().getId().equals(match.getVisitingClub().getId())) {
-            throw new InvalidFieldsException(EQUAL_CLUBS_AT_MATCH);
+            throw new InvalidFieldsException(MATCH.EQUAL_CLUBS);
         }
     }
 
     public void validateClubsAreInvalid(Match match) {
 
         if(match.getVisitingClub() == null || match.getHomeClub() == null) {
-            throw new CreationConflictException(INVALID_CLUB);
+            throw new CreationConflictException(CLUB.INVALID);
         }
 
         if(match.getHomeClub().getActive().equals(false) || match.getVisitingClub().getActive().equals(false)) {
-            throw new CreationConflictException(INACTIVE_CLUB);
+            throw new CreationConflictException(CLUB.INACTIVE);
         }
 
         LocalDate matchDate = match.getDateTime().toLocalDate();
 
         if(matchDate.isBefore(match.getVisitingClub().getCreationDate()) || matchDate.isBefore(match.getHomeClub().getCreationDate())) {
-            throw new CreationConflictException(MATCH_BEFORE_CREATION_DATE);
+            throw new CreationConflictException(MATCH.BEFORE_CLUB_CREATION_DATE);
         }
     }
 
@@ -62,14 +62,14 @@ public class MatchValidator {
         boolean isInvalidHomeClubMatchDate = homeClubMatches.stream().anyMatch(matchHomeClub -> areMatchesLessThan48HoursFromEachOther(match, matchHomeClub));
 
         if(isInvalidHomeClubMatchDate) {
-            throw new CreationConflictException(INTERVAL_LESS_THAN_48_HOURS);
+            throw new CreationConflictException(MATCH.INTERVAL_LESS_THAN_48_HOURS);
         }
 
         List<Match> visitingClubMatches = this.matchRepository.findAllByVisitingClubId(match.getVisitingClub().getId());
         boolean isInvalidVisitingClubMatchDate = visitingClubMatches.stream().anyMatch(matchVisitingClub -> areMatchesLessThan48HoursFromEachOther(match, matchVisitingClub));
 
         if(isInvalidVisitingClubMatchDate) {
-            throw new CreationConflictException(INTERVAL_LESS_THAN_48_HOURS);
+            throw new CreationConflictException(MATCH.INTERVAL_LESS_THAN_48_HOURS);
         }
     }
 
@@ -77,7 +77,7 @@ public class MatchValidator {
         boolean existsMatchAtStadiumAtDate = this.matchRepository.exists(MatchSpecification.matchAtStadiumAtDate(match));
 
         if(existsMatchAtStadiumAtDate) {
-            throw new CreationConflictException(STADIUM_ALREADY_HAS_MATCH);
+            throw new CreationConflictException(STADIUM.ALREADY_HAS_MATCH_AT_SAME_DAY);
         }
     }
 

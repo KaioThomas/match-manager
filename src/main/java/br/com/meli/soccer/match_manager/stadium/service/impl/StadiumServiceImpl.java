@@ -1,9 +1,9 @@
 package br.com.meli.soccer.match_manager.stadium.service.impl;
 
+import br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumCreateRequest;
-import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumRequestDTO;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumUpdateRequest;
-import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
+import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponse;
 import br.com.meli.soccer.match_manager.stadium.entity.Stadium;
 import br.com.meli.soccer.match_manager.common.exception.NotFoundException;
 import br.com.meli.soccer.match_manager.stadium.repository.StadiumRepository;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.STADIUM_NOT_FOUND;
+import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.STADIUM;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Override
     @Transactional
-    public StadiumResponseDTO create(StadiumCreateRequest stadiumCreateRequest) {
+    public StadiumResponse create(StadiumCreateRequest stadiumCreateRequest) {
         Stadium stadium = StadiumMapper.toEntity(stadiumCreateRequest, new Stadium());
 
         this.stadiumValidator.validateCreate(stadium);
@@ -41,9 +41,9 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Override
     @Transactional
-    public StadiumResponseDTO update(StadiumUpdateRequest stadiumUpdateRequest) {
-        Stadium oldStadium = this.stadiumRepository.findById(stadiumUpdateRequest.id())
-                .orElseThrow(() -> new NotFoundException(STADIUM_NOT_FOUND));
+    public StadiumResponse update(StadiumUpdateRequest stadiumUpdateRequest) {
+        Stadium oldStadium = this.stadiumRepository.findById(stadiumUpdateRequest.getId())
+                .orElseThrow(() -> new NotFoundException(ValidationFailedMessageConstants.STADIUM.NOT_FOUND));
 
         Stadium updatedStadium = StadiumMapper.toEntity(stadiumUpdateRequest, oldStadium);
 
@@ -55,16 +55,16 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Override
     @Transactional
-    public StadiumResponseDTO getById(String id) {
+    public StadiumResponse getById(String id) {
         Stadium response = this.stadiumRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(STADIUM_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(STADIUM.NOT_FOUND));
 
         return StadiumMapper.toResponseDTO(response);
     }
 
     @Override
     @Transactional
-    public List<StadiumResponseDTO> getAll(String name, Pageable pageable) {
+    public List<StadiumResponse> getAll(String name, Pageable pageable) {
         Stadium stadium = new Stadium();
         stadium.setName(name);
 

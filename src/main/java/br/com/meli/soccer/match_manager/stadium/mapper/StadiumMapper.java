@@ -1,7 +1,7 @@
 package br.com.meli.soccer.match_manager.stadium.mapper;
 
-import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumRequestDTO;
-import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
+import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumRequest;
+import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponse;
 import br.com.meli.soccer.match_manager.stadium.entity.Stadium;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StadiumMapper {
 
-    public static Stadium toEntity(StadiumRequestDTO stadiumRequestDTO, Stadium stadium) {
+    public static Stadium toEntity(StadiumRequest stadiumRequest, Stadium stadium) {
 
         return stadium.toBuilder()
-                .name(stadiumRequestDTO.name().toUpperCase())
+                .name(stadiumRequest.getName().toUpperCase())
                 .build();
     }
 
-    public static StadiumResponseDTO toResponseDTO(Stadium stadium) {
-        return new StadiumResponseDTO(stadium.getId(), stadium.getName());
+    public static StadiumResponse toResponseDTO(Stadium stadium) {
+        return new StadiumResponse(stadium.getId(), stadium.getName());
     }
 }

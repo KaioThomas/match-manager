@@ -1,9 +1,9 @@
 package br.com.meli.soccer.match_manager.match.service;
 
-import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
-import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
@@ -20,13 +20,13 @@ public interface MatchService {
 
     MatchResponse getById(String id);
 
-    List<MatchResponse> getAll(MatchFilterRequest matchFilterRequest, Pageable pageable);
+    List<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable);
 
     void deleteById(String id);
 
-    List<RetrospectByOpponentResponse> getTotalRetrospect(String id, ClubTypeEnum clubRequiredActing, String opponendId);
+    List<RetrospectByOpponentResponse> getTotalRetrospect(String clubId, MatchActingFilter matchActingFilter, String opponentId);
 
-    ClubTotalRetrospectResponse getMatchRetrospect(String id, ClubTypeEnum clubRequiredActing);
+    ClubTotalRetrospectResponse getMatchRetrospectByOpponent(String clubId, MatchActingFilter matchActingFilter);
 
     List<RankingResponse> getRanking();
 }

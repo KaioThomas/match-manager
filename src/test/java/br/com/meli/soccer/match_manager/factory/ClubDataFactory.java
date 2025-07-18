@@ -1,7 +1,7 @@
 package br.com.meli.soccer.match_manager.factory;
 
 import br.com.meli.soccer.match_manager.club.dto.request.ClubCreateRequest;
-import br.com.meli.soccer.match_manager.club.dto.response.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.club.dto.response.ClubResponse;
 import br.com.meli.soccer.match_manager.club.service.ClubService;
 import br.com.meli.soccer.match_manager.common.enums.AcronymStatesEnum;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ public class ClubDataFactory {
 
     private final ClubService clubService;
 
-    public ClubResponseDTO createGremio() {
+    public ClubResponse createGremio() {
         return createClubAtDatabase(
                 "grêmio",
                 AcronymStatesEnum.GO,
@@ -22,7 +22,7 @@ public class ClubDataFactory {
         );
     }
 
-    public ClubResponseDTO createGremio2() {
+    public ClubResponse createGremio2() {
         return createClubAtDatabase(
                 "grêmio",
                 AcronymStatesEnum.SP,
@@ -31,7 +31,7 @@ public class ClubDataFactory {
         );
     }
 
-    public ClubResponseDTO createAtletico() {
+    public ClubResponse createAtletico() {
         return createClubAtDatabase(
                 "atlético",
                 AcronymStatesEnum.AM, LocalDate.of(1964, 8, 25),
@@ -39,7 +39,7 @@ public class ClubDataFactory {
         );
     }
 
-    public ClubResponseDTO createUniaoLitoranea() {
+    public ClubResponse createUniaoLitoranea() {
         return createClubAtDatabase(
                 "união litorânea",
                 AcronymStatesEnum.SC,
@@ -48,7 +48,7 @@ public class ClubDataFactory {
         );
     }
 
-    public ClubResponseDTO createFenixMetropolitana() {
+    public ClubResponse createFenixMetropolitana() {
         return createClubAtDatabase(
                 "fênix metropolitana",
                 AcronymStatesEnum.SP,
@@ -57,8 +57,8 @@ public class ClubDataFactory {
         );
     }
 
-    public ClubResponseDTO createClubAtDatabase(String name, AcronymStatesEnum acronymState, LocalDate localDate, Boolean active) {
-        ClubCreateRequest clubCreateRequest = new ClubCreateRequest(name, acronymState.toString(), localDate, active);
+    public ClubResponse createClubAtDatabase(String name, AcronymStatesEnum acronymState, LocalDate localDate, Boolean active) {
+        ClubCreateRequest clubCreateRequest = new ClubCreateRequest(name, acronymState, localDate, active);
         return clubService.create(clubCreateRequest);
     }
 }

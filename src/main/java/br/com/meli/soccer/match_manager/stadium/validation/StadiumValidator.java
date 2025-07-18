@@ -1,5 +1,6 @@
 package br.com.meli.soccer.match_manager.stadium.validation;
 
+import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.STADIUM;
 import br.com.meli.soccer.match_manager.stadium.entity.Stadium;
 import br.com.meli.soccer.match_manager.stadium.dto.specification.StadiumSpecification;
 import br.com.meli.soccer.match_manager.common.exception.CreationConflictException;
@@ -21,7 +22,7 @@ public class StadiumValidator {
         boolean hasStadiumWithSameName = this.stadiumRepository.exists(StadiumSpecification.otherStadiumSameName(stadium.getName(), stadium.getId()));
 
         if(hasStadiumWithSameName) {
-            throw new CreationConflictException("There is already a stadium with this name");
+            throw new CreationConflictException(STADIUM.DUPLICATED);
         }
     }
 }

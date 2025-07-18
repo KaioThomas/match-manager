@@ -1,15 +1,15 @@
 package br.com.meli.soccer.match_manager.match.service.impl;
 
-import br.com.meli.soccer.match_manager.common.enums.ClubTypeEnum;
 import br.com.meli.soccer.match_manager.common.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.match.dto.ClubData;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
+import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.ClubTotalRetrospectResponse;
 import br.com.meli.soccer.match_manager.match.dto.Opponent;
 import br.com.meli.soccer.match_manager.match.dto.response.RankingResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.RetrospectByOpponentResponse;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchRequest;
-import br.com.meli.soccer.match_manager.match.dto.filter.MatchFilterRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
 import br.com.meli.soccer.match_manager.club.entity.Club;
@@ -68,16 +68,16 @@ public class MathServiceImpl implements MatchService {
     public MatchResponse getById(String id) {
 
         Match match = this.matchRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(MATCH_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(MATCH.NOT_FOUND));
 
         return MatchMapper.toResponseDTO(match);
     }
 
     @Override
     @Transactional
-    public List<MatchResponse> getAll(MatchFilterRequest matchFilterRequest, Pageable pageable) {
+    public List<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable) {
 
-        Specification<Match> matchSpecification = MatchSpecification.matchsByFilledFields(matchFilterRequest);
+        Specification<Match> matchSpecification = MatchSpecification.matchsByFilledFields(clubId, matchThrashingFilter.thrashing());
 
         return this.matchRepository.findAll(matchSpecification, pageable)
                 .map(MatchMapper::toResponseDTO)
@@ -93,17 +93,17 @@ public class MathServiceImpl implements MatchService {
 
     @Override
     @Transactional
-    public List<RetrospectByOpponentResponse> getTotalRetrospect(String clubId, ClubTypeEnum clubRequiredActing, String opponendId) {
-        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), clubRequiredActing, opponendId));
+    public List<RetrospectByOpponentResponse> getTotalRetrospect(String clubId, MatchActingFilter matchActingFilter, String opponentId) {
+        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), matchActingFilter.clubRequiredActing(), opponentId));
         return this.getClubRetrospectByOpponent(matches, clubId);
     }
 
     @Override
     @Transactional
-    public ClubTotalRetrospectResponse getMatchRetrospect(String clubId, ClubTypeEnum clubRequiredActing) {
-        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB_NOT_FOUND));
-        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), clubRequiredActing, null));
+    public ClubTotalRetrospectResponse getMatchRetrospectByOpponent(String clubId, MatchActingFilter matchActingFilter) {
+        Club club = this.clubRepository.findById(clubId).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
+        List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), matchActingFilter.clubRequiredActing(), null));
         return this.getTotalClubRetrospect(matches, clubId);
     }
 
@@ -192,18 +192,18 @@ public class MathServiceImpl implements MatchService {
             match = new Match();
         } else {
             MatchUpdateRequest matchUpdateRequest = (MatchUpdateRequest) matchRequest;
-            match = this.matchRepository.findById(matchUpdateRequest.id())
-                    .orElseThrow(() -> new NotFoundException(MATCH_NOT_FOUND));
+            match = this.matchRepository.findById(matchUpdateRequest.getId())
+                    .orElseThrow(() -> new NotFoundException(MATCH.NOT_FOUND));
         }
 
-        Stadium stadium = this.stadiumRepository.findById(matchRequest.stadiumId())
-                .orElseThrow(() -> new InvalidFieldsException(STADIUM_NOT_FOUND));
+        Stadium stadium = this.stadiumRepository.findById(matchRequest.getStadiumId())
+                .orElseThrow(() -> new InvalidFieldsException(STADIUM.NOT_FOUND));
 
-        Club visitingClub = this.clubRepository.findById(matchRequest.visitingClubResult().id())
-                .orElseThrow(() -> new InvalidFieldsException(CLUB_NOT_FOUND));
+        Club visitingClub = this.clubRepository.findById(matchRequest.getVisitingClubResult().id())
+                .orElseThrow(() -> new InvalidFieldsException(CLUB.NOT_FOUND));
 
-        Club homeClub = this.clubRepository.findById(matchRequest.homeClubResult().id()).
-                orElseThrow(() -> new InvalidFieldsException(CLUB_NOT_FOUND));
+        Club homeClub = this.clubRepository.findById(matchRequest.getHomeClubResult().id()).
+                orElseThrow(() -> new InvalidFieldsException(CLUB.NOT_FOUND));
 
         return MatchMapper.toEntity(matchRequest, stadium, homeClub, visitingClub, match);
 

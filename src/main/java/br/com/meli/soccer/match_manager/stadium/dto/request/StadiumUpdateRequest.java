@@ -1,13 +1,22 @@
 package br.com.meli.soccer.match_manager.stadium.dto.request;
 
+import br.com.meli.soccer.match_manager.common.constants.SchemaConstants;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-public record StadiumUpdateRequest(
+@ToString
+@Getter
+@Setter
+public class StadiumUpdateRequest extends StadiumRequest {
         @NotEmpty
-        String id,
+        @Schema(description = SchemaConstants.STADIUM.ID_DESC, example = SchemaConstants.STADIUM.ID_EXAMPLE)
+        String id;
 
-        @NotEmpty
-        @Size(min = 3, max = 50)
-        String name
-) implements StadiumRequestDTO { }
+        public StadiumUpdateRequest(String id, String name) {
+                super(name);
+                this.id = id;
+        }
+}

@@ -2,7 +2,7 @@ package br.com.meli.soccer.match_manager.club.controller;
 
 import br.com.meli.soccer.match_manager.club.dto.request.ClubCreateRequest;
 import br.com.meli.soccer.match_manager.club.dto.request.ClubUpdateRequest;
-import br.com.meli.soccer.match_manager.club.dto.response.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.club.dto.response.ClubResponse;
 import br.com.meli.soccer.match_manager.club.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.club.service.ClubService;
 import br.com.meli.soccer.match_manager.common.enums.AcronymStatesEnum;
@@ -48,11 +48,11 @@ class ClubControllerTest {
 
     private ClubDataFactory clubDataFactory;
 
-    private ClubResponseDTO gremio;
-    private ClubResponseDTO gremio2;
-    private ClubResponseDTO atletico;
-    private ClubResponseDTO uniaoLitoranea;
-    private ClubResponseDTO fenixMetropolitana;
+    private ClubResponse gremio;
+    private ClubResponse gremio2;
+    private ClubResponse atletico;
+    private ClubResponse uniaoLitoranea;
+    private ClubResponse fenixMetropolitana;
 
     @BeforeEach
     void setUp(){
@@ -72,7 +72,7 @@ class ClubControllerTest {
 
     @Test
     void test_shouldCreateClub_and_return_201() throws Exception {
-        ClubCreateRequest clubRequest = new ClubCreateRequest("são paulo", AcronymStatesEnum.SP.toString(), LocalDate.now(), true);
+        ClubCreateRequest clubRequest = new ClubCreateRequest("são paulo", AcronymStatesEnum.SP, LocalDate.now(), true);
         String clubRequestJson = objectMapper.writeValueAsString(clubRequest);
 
         mockMvc.perform(post("/club").contentType(MediaType.APPLICATION_JSON).content(clubRequestJson))
@@ -80,17 +80,17 @@ class ClubControllerTest {
                     status().isCreated()
                 )
                 .andExpect(result -> {
-                    ClubResponseDTO response = objectMapper.readValue(result.getResponse().getContentAsString(), ClubResponseDTO.class);
-                    Assertions.assertEquals(response.name(), clubRequest.name().toUpperCase());
-                    Assertions.assertEquals(response.acronymState(), clubRequest.stateAcronym().toUpperCase());
-                    Assertions.assertEquals(response.creationDate(), clubRequest.creationDate());
-                    Assertions.assertEquals(clubRequest.active(), response.active());
+                    ClubResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), ClubResponse.class);
+                    Assertions.assertEquals(response.name(), clubRequest.getName().toUpperCase());
+                    Assertions.assertEquals(response.acronymState(), clubRequest.getStateAcronym().toString());
+                    Assertions.assertEquals(response.creationDate(), clubRequest.getCreationDate());
+                    Assertions.assertEquals(clubRequest.getActive(), response.active());
                 });
     }
 
     @Test
     void test_shouldCreateDuplicatedClubs_and_return_409() throws Exception {
-        ClubCreateRequest clubRequest = new ClubCreateRequest(gremio.name(), gremio.acronymState(), LocalDate.now(), true);
+        ClubCreateRequest clubRequest = new ClubCreateRequest(gremio.name(), AcronymStatesEnum.valueOf(gremio.acronymState()), LocalDate.now(), true);
         String clubRequestJson = objectMapper.writeValueAsString(clubRequest);
 
         mockMvc.perform(post("/club")
@@ -110,25 +110,25 @@ class ClubControllerTest {
 
     @Test
     void test_shouldUpdateClub_and_return_200() throws Exception {
-        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(uniaoLitoranea.id(), uniaoLitoranea.name() + " litoral clube", AcronymStatesEnum.CE.toString(), uniaoLitoranea.creationDate().minusYears(1), !uniaoLitoranea.active());
+        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(uniaoLitoranea.id(), uniaoLitoranea.name() + " litoral clube", AcronymStatesEnum.CE, uniaoLitoranea.creationDate().minusYears(1), !uniaoLitoranea.active());
 
         String clubUpdateRequestJson = objectMapper.writeValueAsString(clubUpdateRequest);
 
         mockMvc.perform(put("/club").contentType(MediaType.APPLICATION_JSON).content(clubUpdateRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    ClubResponseDTO response = objectMapper.readValue(result.getResponse().getContentAsString(), ClubResponseDTO.class);
-                    Assertions.assertEquals(response.name(), clubUpdateRequest.name().toUpperCase());
-                    Assertions.assertEquals(response.acronymState(), clubUpdateRequest.stateAcronym().toUpperCase());
-                    Assertions.assertEquals(response.creationDate(), clubUpdateRequest.creationDate());
-                    Assertions.assertEquals(clubUpdateRequest.active(), response.active());
+                    ClubResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), ClubResponse.class);
+                    Assertions.assertEquals(response.name(), clubUpdateRequest.getName().toUpperCase());
+                    Assertions.assertEquals(response.acronymState(), clubUpdateRequest.getStateAcronym().toString());
+                    Assertions.assertEquals(response.creationDate(), clubUpdateRequest.getCreationDate());
+                    Assertions.assertEquals(clubUpdateRequest.getActive(), response.active());
                 });
     }
 
     @Test
     void test_shouldUpdateClub_and_return_404() throws Exception {
 
-        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(UUID.randomUUID().toString(), "palmeiras", AcronymStatesEnum.CE.toString(), LocalDate.of(2004, 6, 19), false);
+        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(UUID.randomUUID().toString(), "palmeiras", AcronymStatesEnum.CE, LocalDate.of(2004, 6, 19), false);
         String clubUpdateRequestJson = objectMapper.writeValueAsString(clubUpdateRequest);
 
         mockMvc.perform(put("/club").contentType(MediaType.APPLICATION_JSON).content(clubUpdateRequestJson))
@@ -137,7 +137,7 @@ class ClubControllerTest {
 
     @Test
     void test_shouldUpdateDuplicatedClubs_and_return_409() throws Exception {
-        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(atletico.id(), gremio2.name(), gremio2.acronymState(), atletico.creationDate(), atletico.active());
+        ClubUpdateRequest clubUpdateRequest = new ClubUpdateRequest(atletico.id(), gremio2.name(), AcronymStatesEnum.valueOf(gremio2.acronymState()), atletico.creationDate(), atletico.active());
         String clubUpdateRequestJson = objectMapper.writeValueAsString(clubUpdateRequest);
 
         mockMvc.perform(put("/club").contentType(MediaType.APPLICATION_JSON).content(clubUpdateRequestJson))
@@ -150,7 +150,7 @@ class ClubControllerTest {
 
         MvcResult deletedClubMvcResult = mockMvc.perform(get("/club/{id}", fenixMetropolitana.id())).andReturn();
 
-        ClubResponseDTO deletedClubResponse = objectMapper.readValue(deletedClubMvcResult.getResponse().getContentAsString(), ClubResponseDTO.class);
+        ClubResponse deletedClubResponse = objectMapper.readValue(deletedClubMvcResult.getResponse().getContentAsString(), ClubResponse.class);
 
         Assertions.assertFalse(deletedClubResponse.active());
     }
@@ -158,7 +158,7 @@ class ClubControllerTest {
     @Test
     void test_shouldGetClub_and_return_200() throws Exception {
         MvcResult getClubMvcResult = mockMvc.perform(get("/club/{id}", gremio.id())).andReturn();
-        ClubResponseDTO getClubResponse = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponseDTO.class);
+        ClubResponse getClubResponse = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponse.class);
 
         Assertions.assertEquals(getClubResponse.name(), gremio.name().toUpperCase());
         Assertions.assertEquals(getClubResponse.acronymState(), gremio.acronymState().toUpperCase());
@@ -179,9 +179,9 @@ class ClubControllerTest {
 
     @Test
     void test_shouldGetAll_and_return_200_empty_list() throws Exception {
-        MvcResult getClubMvcResult = mockMvc.perform(get("/club").param("name", "são paulo")).andReturn();
-        ClubResponseDTO[] clubResponseDTOS = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponseDTO[].class);
-        Assertions.assertEquals(0, clubResponseDTOS.length);
+        MvcResult getClubMvcResult = mockMvc.perform(get("/club/findAll").param("name", "são paulo")).andReturn();
+        ClubResponse[] clubResponses = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponse[].class);
+        Assertions.assertEquals(0, clubResponses.length);
     }
 
     void fillDatabase() {
@@ -196,11 +196,11 @@ class ClubControllerTest {
     @MethodSource("searchClubByFilters")
     void test_shouldGetAllByFilters_and_return_200(Map<String, String> params, int expectedClubs) throws Exception {
 
-        MvcResult getClubMvcResult = mockMvc.perform(get("/club")
+        MvcResult getClubMvcResult = mockMvc.perform(get("/club/findAll")
                 .params(MultiValueMap.fromSingleValue(params))
         ).andReturn();
-        ClubResponseDTO[] clubResponseDTOS = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponseDTO[].class);
-        Assertions.assertEquals(expectedClubs, clubResponseDTOS.length);
+        ClubResponse[] clubResponses = objectMapper.readValue(getClubMvcResult.getResponse().getContentAsString(), ClubResponse[].class);
+        Assertions.assertEquals(expectedClubs, clubResponses.length);
     }
 
     static Stream<Arguments> searchClubByFilters() {
@@ -227,30 +227,24 @@ class ClubControllerTest {
 
     static Stream<ClubUpdateRequest> invalidClubUpdateRequest() {
         return Stream.of(
-                new ClubUpdateRequest("123","", "SP", LocalDate.now(), true),
-                new ClubUpdateRequest("123","sao paulo", "", LocalDate.now(), true),
-                new ClubUpdateRequest("123","sao paulo", "SP", null, true),
-                new ClubUpdateRequest("123","sao paulo", "SP", LocalDate.now(), null),
-                new ClubUpdateRequest("123","s", "SP", LocalDate.now(), true),
-                new ClubUpdateRequest("123","s".repeat(51), "SP", LocalDate.now(), true),
-                new ClubUpdateRequest("123","sao paulo", "WH", LocalDate.now(), true),
-                new ClubUpdateRequest("123","sao paulo", "S", LocalDate.now(), true),
-                new ClubUpdateRequest("123","sao paulo", "SP", LocalDate.now().plusDays(1), true),
-                new ClubUpdateRequest("","sao paulo", "SP", LocalDate.now(), true)
+                new ClubUpdateRequest("123","", AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubUpdateRequest("123","sao paulo", AcronymStatesEnum.SP, null, true),
+                new ClubUpdateRequest("123","sao paulo", AcronymStatesEnum.SP, LocalDate.now(), null),
+                new ClubUpdateRequest("123","s", AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubUpdateRequest("123","s".repeat(51), AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubUpdateRequest("123","sao paulo", AcronymStatesEnum.SP, LocalDate.now().plusDays(1), true),
+                new ClubUpdateRequest("","sao paulo", AcronymStatesEnum.SP, LocalDate.now(), true)
         );
     }
 
     static Stream<ClubCreateRequest> invalidClubCreateRequest() {
         return Stream.of(
-                new ClubCreateRequest("", "SP", LocalDate.now(), true),
-                new ClubCreateRequest("sao paulo", "", LocalDate.now(), true),
-                new ClubCreateRequest("sao paulo", "SP", null, true),
-                new ClubCreateRequest("sao paulo", "SP", LocalDate.now(), null),
-                new ClubCreateRequest("s", "SP", LocalDate.now(), true),
-                new ClubCreateRequest("s".repeat(51), "SP", LocalDate.now(), true),
-                new ClubCreateRequest("sao paulo", "WH", LocalDate.now(), true),
-                new ClubCreateRequest("sao paulo", "S", LocalDate.now(), true),
-                new ClubCreateRequest("sao paulo", "SP", LocalDate.now().plusDays(1), true)
+                new ClubCreateRequest("", AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubCreateRequest("sao paulo", AcronymStatesEnum.SP, null, true),
+                new ClubCreateRequest("sao paulo", AcronymStatesEnum.SP, LocalDate.now(), null),
+                new ClubCreateRequest("s", AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubCreateRequest("s".repeat(51), AcronymStatesEnum.SP, LocalDate.now(), true),
+                new ClubCreateRequest("sao paulo", AcronymStatesEnum.SP, LocalDate.now().plusDays(1), true)
         );
     }
 }

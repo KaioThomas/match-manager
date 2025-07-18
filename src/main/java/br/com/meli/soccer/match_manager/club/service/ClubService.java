@@ -2,22 +2,22 @@ package br.com.meli.soccer.match_manager.club.service;
 
 import br.com.meli.soccer.match_manager.club.dto.request.ClubCreateRequest;
 import br.com.meli.soccer.match_manager.club.dto.request.ClubUpdateRequest;
-import br.com.meli.soccer.match_manager.club.dto.response.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.club.dto.response.ClubResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ClubService {
 
-    ClubResponseDTO create(ClubCreateRequest clubCreateRequest);
+    ClubResponse create(ClubCreateRequest clubCreateRequest);
 
-    ClubResponseDTO update(ClubUpdateRequest clubUpdateRequest);
+    ClubResponse update(ClubUpdateRequest clubUpdateRequest);
 
-    ClubResponseDTO getById(String id);
+    ClubResponse getById(String id);
 
     void deleteById(String id);
 
-    List<ClubResponseDTO> getAll(
+    List<ClubResponse> getAll(
             String name,
             Boolean active,
             String acronymState,

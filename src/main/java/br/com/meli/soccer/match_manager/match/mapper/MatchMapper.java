@@ -1,9 +1,9 @@
 package br.com.meli.soccer.match_manager.match.mapper;
 
 import br.com.meli.soccer.match_manager.match.dto.request.MatchRequest;
-import br.com.meli.soccer.match_manager.club.dto.response.ClubResponseDTO;
+import br.com.meli.soccer.match_manager.club.dto.response.ClubResponse;
 import br.com.meli.soccer.match_manager.match.dto.response.MatchResponse;
-import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
+import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponse;
 import br.com.meli.soccer.match_manager.club.entity.Club;
 import br.com.meli.soccer.match_manager.match.entity.Match;
 import br.com.meli.soccer.match_manager.stadium.entity.Stadium;
@@ -18,18 +18,18 @@ public class MatchMapper {
     public static Match toEntity(MatchRequest matchRequest, Stadium stadium, Club homeClub, Club visitingClub, Match match) {
         return match.toBuilder()
                 .homeClub(homeClub)
-                .homeClubGoals(matchRequest.homeClubResult().goals())
+                .homeClubGoals(matchRequest.getHomeClubResult().goals())
                 .visitingClub(visitingClub)
-                .visitingClubGoals(matchRequest.visitingClubResult().goals())
+                .visitingClubGoals(matchRequest.getVisitingClubResult().goals())
                 .stadium(stadium)
-                .dateTime(matchRequest.dateTime())
+                .dateTime(matchRequest.getDateTime())
                 .build();
     }
 
     public static MatchResponse toResponseDTO(Match match) {
-        ClubResponseDTO homeClubResponse = ClubMapper.toResponse(match.getHomeClub());
-        ClubResponseDTO visitingClubResponse = ClubMapper.toResponse(match.getVisitingClub());
-        StadiumResponseDTO stadiumResponseDTO = StadiumMapper.toResponseDTO(match.getStadium());
+        ClubResponse homeClubResponse = ClubMapper.toResponse(match.getHomeClub());
+        ClubResponse visitingClubResponse = ClubMapper.toResponse(match.getVisitingClub());
+        StadiumResponse stadiumResponse = StadiumMapper.toResponseDTO(match.getStadium());
 
         return new MatchResponse(
                 match.getId(),
@@ -37,7 +37,7 @@ public class MatchMapper {
                 visitingClubResponse,
                 match.getHomeClubGoals(),
                 match.getVisitingClubGoals(),
-                stadiumResponseDTO,
+                stadiumResponse,
                 match.getDateTime()
         );
     }

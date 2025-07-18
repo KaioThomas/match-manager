@@ -3,10 +3,11 @@ package br.com.meli.soccer.match_manager.stadium.controller;
 import br.com.meli.soccer.match_manager.factory.StadiumDataFactory;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumCreateRequest;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumUpdateRequest;
-import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponseDTO;
+import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponse;
 import br.com.meli.soccer.match_manager.stadium.repository.StadiumRepository;
 import br.com.meli.soccer.match_manager.stadium.service.StadiumService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class StadiumControllerTest {
 
     @Autowired
@@ -46,9 +47,9 @@ class StadiumControllerTest {
 
     private StadiumDataFactory stadiumDataFactory;
 
-    private StadiumResponseDTO arenaPampa;
-    private StadiumResponseDTO horizonteAzul;
-    private StadiumResponseDTO solarDasPalmeiras;
+    private StadiumResponse arenaPampa;
+    private StadiumResponse horizonteAzul;
+    private StadiumResponse solarDasPalmeiras;
 
     private final String baseUrl = "/stadium";
 
@@ -79,7 +80,7 @@ class StadiumControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(result -> {
 
-                    StadiumResponseDTO stadiumResponse = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO.class);
+                    StadiumResponse stadiumResponse = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse.class);
 
                     Assertions.assertEquals(name.toUpperCase(), stadiumResponse.name());
                 });
@@ -115,7 +116,7 @@ class StadiumControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
 
-                    StadiumResponseDTO stadiumResponse = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO.class);
+                    StadiumResponse stadiumResponse = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse.class);
 
                     Assertions.assertEquals(name.toUpperCase(), stadiumResponse.name());
                 });
@@ -146,8 +147,8 @@ class StadiumControllerTest {
         mockMvc.perform(get(baseUrl + "/{id}", arenaPampa.id()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    StadiumResponseDTO stadiumResponseDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO.class);
-                    Assertions.assertEquals(stadiumResponseDTO.name(), arenaPampa.name());
+                    StadiumResponse stadiumResponse = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse.class);
+                    Assertions.assertEquals(stadiumResponse.name(), arenaPampa.name());
                 });
     }
 
@@ -162,7 +163,7 @@ class StadiumControllerTest {
         mockMvc.perform(get(baseUrl + "/findAll"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    StadiumResponseDTO[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO[].class);
+                    StadiumResponse[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse[].class);
                     Assertions.assertEquals(3, stadiumResponsesDTO.length);
                 });
     }
@@ -172,7 +173,7 @@ class StadiumControllerTest {
     mockMvc.perform(get(baseUrl + "/findAll").param("name", solarDasPalmeiras.name()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    StadiumResponseDTO[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO[].class);
+                    StadiumResponse[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse[].class);
                     Assertions.assertEquals(1, stadiumResponsesDTO.length);
                 });
     }
@@ -182,7 +183,7 @@ class StadiumControllerTest {
         mockMvc.perform(get(baseUrl + "/findAll").param("name", "maracanã"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    StadiumResponseDTO[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponseDTO[].class);
+                    StadiumResponse[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse[].class);
                     Assertions.assertEquals(0, stadiumResponsesDTO.length);
                 });
     }

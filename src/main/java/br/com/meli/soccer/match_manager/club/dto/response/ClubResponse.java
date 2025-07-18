@@ -2,7 +2,7 @@ package br.com.meli.soccer.match_manager.club.dto.response;
 
 import java.time.LocalDate;
 
-public record ClubResponseDTO(
+public record ClubResponse(
         String id,
         String name,
         String acronymState,

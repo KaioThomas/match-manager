@@ -1,27 +1,23 @@
 package br.com.meli.soccer.match_manager.match.dto.request;
 
-import br.com.meli.soccer.match_manager.club.dto.request.ClubResultDTO;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
+import br.com.meli.soccer.match_manager.club.dto.request.ClubResult;
+import br.com.meli.soccer.match_manager.common.constants.SchemaConstants;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-public record MatchUpdateRequest (
+@ToString
+@Getter
+@Setter
+public class MatchUpdateRequest extends MatchRequest {
         @NotNull
-        String id,
+        @Schema(description = SchemaConstants.MATCH.ID_DESC, example = SchemaConstants.MATCH.ID_EXAMPLE)
+        String id;
 
-        @Valid
-        ClubResultDTO homeClubResult,
-
-        @Valid
-        ClubResultDTO visitingClubResult,
-
-        @NotEmpty
-        String stadiumId,
-
-        @NotNull
-        @PastOrPresent
-        LocalDateTime dateTime
-) implements MatchRequest { }
+        public MatchUpdateRequest(String id, ClubResult homeClubResult, ClubResult visitingClubResult, String stadiumId, LocalDateTime dateTime) {
+                super(homeClubResult, visitingClubResult, stadiumId, dateTime);
+                this.id = id;
+        }
+}
