@@ -75,11 +75,11 @@ public class MatchController {
             final String clubId,
 
             @ParameterObject
-            final Pageable pageable,
+            @Valid
+            final MatchThrashingFilter matchThrashingFilter,
 
             @ParameterObject
-            @Valid
-            final MatchThrashingFilter matchThrashingFilter
+            final Pageable pageable
     ) {
         return this.matchService.getAll(clubId, matchThrashingFilter, pageable);
     }

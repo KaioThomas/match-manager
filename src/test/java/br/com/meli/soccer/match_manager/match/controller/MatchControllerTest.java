@@ -132,7 +132,8 @@ class MatchControllerTest {
         ).andExpect(status().isNotFound());
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("retrospectOpponentsFilters")
     void test_shouldGetRetrospectByOpponents_and_return_200() throws Exception {
 
         mockMvc.perform(get(basePath + "/retrospect/opponents")
@@ -148,11 +149,12 @@ class MatchControllerTest {
         ).andExpect(status().isNotFound());
     }
 
-    @Test
-    void test_shouldGetGeneralRetrospect_and_return_200() throws Exception {
+    @ParameterizedTest
+    @MethodSource("generalRetrospectFilters")
+    void test_shouldGetGeneralRetrospect_and_return_200(Map<String, String> params) throws Exception {
 
         mockMvc.perform(get(basePath + "/retrospect/general")
-                .param("clubId", atleticoClub.id())
+                .params(MultiValueMap.fromSingleValue(params))
         ).andExpect(status().isOk());
     }
 
@@ -164,6 +166,15 @@ class MatchControllerTest {
         ).andExpect(status().isNotFound());
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidMatchCreateRequest")
+    void test_shouldTryToCreateAConflictMatch_and_return_400(MatchCreateRequest invalidMatchCreateRequest) throws Exception {
+
+        String clubRequestJson = objectMapper.writeValueAsString(invalidMatchCreateRequest);
+
+        mockMvc.perform(post(basePath).contentType(MediaType.APPLICATION_JSON).content(clubRequestJson))
+                .andExpect(status().isBadRequest());
+    }
 
     @ParameterizedTest
     @MethodSource("conflictsMatchCreateRequest")
@@ -267,12 +278,49 @@ class MatchControllerTest {
         );
     }
 
+    Stream<Arguments> generalRetrospectFilters() {
+        Map<String, String> paramsByClubId = Map.of("clubId", fenixMetropolitanaClub.id());
+        Map<String, String> paramsByHomeClub = Map.of("clubId", fenixMetropolitanaClub.id(), "clubRequiredActing", ClubTypeEnum.HOME.toString());
+        Map<String, String> paramsByVisitingClub = Map.of("clubId", fenixMetropolitanaClub.id(), "clubRequiredActing", ClubTypeEnum.VISITING.toString());
+
+        return Stream.of(
+                Arguments.of(paramsByClubId),
+                Arguments.of(paramsByHomeClub),
+                Arguments.of(paramsByVisitingClub)
+        );
+    }
+
+    Stream<Arguments> retrospectOpponentsFilters() {
+        Map<String, String> paramsByHomeClub = Map.of("clubId", fenixMetropolitanaClub.id(), "clubRequiredActing", ClubTypeEnum.HOME.toString());
+        Map<String, String> paramsByVisitingClub = Map.of("clubId", fenixMetropolitanaClub.id(), "clubRequiredActing", ClubTypeEnum.VISITING.toString());
+        Map<String, String> paramsAllHomeClub = Map.of("clubRequiredActing", ClubTypeEnum.HOME.toString());
+        Map<String, String> paramsAllVisitingClub = Map.of("clubRequiredActing", ClubTypeEnum.VISITING.toString());
+        Map<String, String> paramsByClubId = Map.of("clubId", fenixMetropolitanaClub.id());
+
+        return Stream.of(
+                Arguments.of(paramsByHomeClub),
+                Arguments.of(paramsByVisitingClub),
+                Arguments.of(paramsAllHomeClub),
+                Arguments.of(paramsAllVisitingClub),
+                Arguments.of(paramsByClubId)
+        );
+    }
+
     Stream<Arguments> searchMatchByFilters() {
 
         Map<String, String> paramsByHomeClubId = Map.of("clubId", fenixMetropolitanaClub.id());
+        Map<String, String> paramsByHomeThrashing = Map.of("thrashing", "true");
+
+       int thrashingExpected = Stream.of(
+                   atleticoVsGremioAtArenaPampaMatch,
+                   gremioAVsAtleticoAtArenaPampaMatch,
+                   fenixVsGremio2AtArenaPampaMatch,
+                   fenixVsAtleticoAtSolarDasPalmeirasMatch
+               ).filter(match -> Math.abs(match.homeClubGoals() - match.visitingClubGoals()) >= 3).toList().size();
 
         return Stream.of(
                 Arguments.of(paramsByHomeClubId, 2),
+                Arguments.of(paramsByHomeThrashing, thrashingExpected),
                 Arguments.of(Map.of(), 4)
         );
     }

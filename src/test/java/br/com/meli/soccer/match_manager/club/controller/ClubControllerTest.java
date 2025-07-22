@@ -10,6 +10,7 @@ import br.com.meli.soccer.match_manager.factory.ClubDataFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -101,6 +102,7 @@ class ClubControllerTest {
 
     @ParameterizedTest
     @MethodSource("invalidClubUpdateRequest")
+    @DisplayName("Scenario: trying to update a club sending invalid fields")
     void test_shouldReturnBadRequestForInvalidFieldsWhenTryUpdateclub_and_return_400(ClubUpdateRequest invalidClubUpdateRequest) throws Exception {
 
         String clubRequestJson = objectMapper.writeValueAsString(invalidClubUpdateRequest);

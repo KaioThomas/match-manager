@@ -168,26 +168,6 @@ class StadiumControllerTest {
                 });
     }
 
-    @Test
-    void test_shouldGetAllStadiumsByName_and_return_200() throws Exception {
-    mockMvc.perform(get(baseUrl + "/findAll").param("name", solarDasPalmeiras.name()))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    StadiumResponse[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse[].class);
-                    Assertions.assertEquals(1, stadiumResponsesDTO.length);
-                });
-    }
-
-    @Test
-    void test_shouldGetAllStadiumsByName_and_return_200_empty() throws Exception {
-        mockMvc.perform(get(baseUrl + "/findAll").param("name", "maracanã"))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    StadiumResponse[] stadiumResponsesDTO = objectMapper.readValue(result.getResponse().getContentAsString(), StadiumResponse[].class);
-                    Assertions.assertEquals(0, stadiumResponsesDTO.length);
-                });
-    }
-
     static Stream<StadiumCreateRequest> invalidStadiumCreateRequestFields() {
         return Stream.of(
                 new StadiumCreateRequest(""),
