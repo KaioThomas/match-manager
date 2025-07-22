@@ -64,17 +64,8 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Override
     @Transactional
-    public List<StadiumResponse> getAll(String name, Pageable pageable) {
-        Stadium stadium = new Stadium();
-        stadium.setName(name);
-
-        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withIgnoreCase()
-                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-
-        Example<Stadium> stadiumExample = Example.of(stadium, exampleMatcher);
-        List<Stadium> stadiums = this.stadiumRepository.findAll(stadiumExample, pageable).getContent();
+    public List<StadiumResponse> getAll(Pageable pageable) {
+        List<Stadium> stadiums = this.stadiumRepository.findAll(pageable).getContent();
 
         return stadiums.stream()
                 .map(StadiumMapper::toResponseDTO)

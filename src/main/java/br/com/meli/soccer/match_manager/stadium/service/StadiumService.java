@@ -15,5 +15,5 @@ public interface StadiumService {
 
     StadiumResponse getById(String id);
 
-    List<StadiumResponse> getAll(String name, Pageable pageable);
+    List<StadiumResponse> getAll(Pageable pageable);
 }

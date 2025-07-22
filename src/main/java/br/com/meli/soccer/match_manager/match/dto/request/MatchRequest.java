@@ -29,6 +29,5 @@ public class MatchRequest {
 
         @NotNull
         @PastOrPresent
-        @Schema(description = SchemaConstants.MATCH.DATE_DESC, example = SchemaConstants.MATCH.DATE_EXAMPLE)
         private LocalDateTime dateTime;
 }

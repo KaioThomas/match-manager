@@ -52,14 +52,10 @@ public class StadiumController {
 
     @GetMapping("/findAll")
     public List<StadiumResponse> getAll(
-            @RequestParam(required = false)
-            @Parameter(description = SchemaConstants.STADIUM.NAME_DESC, example = SchemaConstants.STADIUM.NAME_EXAMPLE)
-            final String name,
-
             @ParameterObject
             final Pageable pageable
     ) {
-        return this.stadiumService.getAll(name, pageable);
+        return this.stadiumService.getAll(pageable);
     }
 
 }
