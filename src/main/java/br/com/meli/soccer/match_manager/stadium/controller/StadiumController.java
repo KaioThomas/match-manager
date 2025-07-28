@@ -9,11 +9,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/stadium")
@@ -51,7 +50,7 @@ public class StadiumController {
     }
 
     @GetMapping("/findAll")
-    public List<StadiumResponse> getAll(
+    public Page<StadiumResponse> getAll(
             @ParameterObject
             final Pageable pageable
     ) {

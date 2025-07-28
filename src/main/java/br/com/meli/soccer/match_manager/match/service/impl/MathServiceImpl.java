@@ -22,6 +22,7 @@ import br.com.meli.soccer.match_manager.stadium.repository.StadiumRepository;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import br.com.meli.soccer.match_manager.match.mapper.MatchMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -73,13 +74,12 @@ public class MathServiceImpl implements MatchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable) {
+    public Page<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable) {
 
         Specification<Match> matchSpecification = MatchSpecification.matchsByFilledFields(clubId, matchThrashingFilter.thrashing());
 
         return this.matchRepository.findAll(matchSpecification, pageable)
-                .map(MatchMapper::toResponseDTO)
-                .toList();
+                .map(MatchMapper::toResponseDTO);
     }
 
     @Override

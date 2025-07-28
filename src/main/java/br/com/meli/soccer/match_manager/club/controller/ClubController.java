@@ -9,12 +9,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/club")
@@ -63,7 +62,7 @@ public class ClubController {
     }
 
     @GetMapping("/findAll")
-    public List<ClubResponse> getAll(
+    public Page<ClubResponse> getAll(
             @RequestParam(required = false)
             @Parameter(description = CLUB.NAME_DESC, example = CLUB.NAME_EXAMPLE)
             final String name,

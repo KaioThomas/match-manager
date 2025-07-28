@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +70,7 @@ public class MatchController {
     }
 
     @GetMapping("/findAll")
-    public List<MatchResponse> getAll(
+    public Page<MatchResponse> getAll(
             @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             @RequestParam(required = false)
             final String clubId,

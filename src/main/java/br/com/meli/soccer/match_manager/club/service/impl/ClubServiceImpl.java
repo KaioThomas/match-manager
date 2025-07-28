@@ -16,8 +16,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ClubServiceImpl implements ClubService {
@@ -64,7 +62,7 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ClubResponse> getAll(
+    public Page<ClubResponse> getAll(
             String name,
             Boolean active,
             String acronymState,
@@ -82,10 +80,6 @@ public class ClubServiceImpl implements ClubService {
         Example<Club> objectExample = Example.of(clubExample, exampleMatcher);
 
         Page<Club> page = this.clubRepository.findAll(objectExample, pageable);
-
-        return page.getContent()
-                .stream()
-                .map(ClubMapper::toResponse)
-                .toList();
+        return page.map(ClubMapper::toResponse);
     }
 }

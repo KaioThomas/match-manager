@@ -11,11 +11,10 @@ import br.com.meli.soccer.match_manager.stadium.service.StadiumService;
 import br.com.meli.soccer.match_manager.stadium.mapper.StadiumMapper;
 import br.com.meli.soccer.match_manager.stadium.validation.StadiumValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static br.com.meli.soccer.match_manager.common.constants.ValidationFailedMessageConstants.STADIUM;
 
@@ -62,11 +61,9 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<StadiumResponse> getAll(Pageable pageable) {
-        List<Stadium> stadiums = this.stadiumRepository.findAll(pageable).getContent();
+    public Page<StadiumResponse> getAll(Pageable pageable) {
+        Page<Stadium> stadiums = this.stadiumRepository.findAll(pageable);
 
-        return stadiums.stream()
-                .map(StadiumMapper::toResponseDTO)
-                .toList();
+        return stadiums.map(StadiumMapper::toResponseDTO);
     }
 }

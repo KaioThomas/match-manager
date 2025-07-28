@@ -3,9 +3,8 @@ package br.com.meli.soccer.match_manager.stadium.service;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumCreateRequest;
 import br.com.meli.soccer.match_manager.stadium.dto.request.StadiumUpdateRequest;
 import br.com.meli.soccer.match_manager.stadium.dto.response.StadiumResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface StadiumService {
 
@@ -15,5 +14,5 @@ public interface StadiumService {
 
     StadiumResponse getById(String id);
 
-    List<StadiumResponse> getAll(Pageable pageable);
+    Page<StadiumResponse> getAll(Pageable pageable);
 }

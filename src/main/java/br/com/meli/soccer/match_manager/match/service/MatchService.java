@@ -6,6 +6,7 @@ import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.*;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchCreateRequest;
 import br.com.meli.soccer.match_manager.match.dto.request.MatchUpdateRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface MatchService {
 
     MatchResponse getById(String id);
 
-    List<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable);
+    Page<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable);
 
     void deleteById(String id);
 

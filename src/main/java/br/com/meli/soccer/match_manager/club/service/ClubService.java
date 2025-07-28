@@ -3,9 +3,8 @@ package br.com.meli.soccer.match_manager.club.service;
 import br.com.meli.soccer.match_manager.club.dto.request.ClubCreateRequest;
 import br.com.meli.soccer.match_manager.club.dto.request.ClubUpdateRequest;
 import br.com.meli.soccer.match_manager.club.dto.response.ClubResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface ClubService {
 
@@ -17,7 +16,7 @@ public interface ClubService {
 
     void deleteById(String id);
 
-    List<ClubResponse> getAll(
+    Page<ClubResponse> getAll(
             String name,
             Boolean active,
             String acronymState,
