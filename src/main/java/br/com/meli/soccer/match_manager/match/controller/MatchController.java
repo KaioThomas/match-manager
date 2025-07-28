@@ -32,45 +32,43 @@ public class MatchController {
     private final MatchService matchService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public MatchResponse create(
+    public ResponseEntity<MatchResponse> create(
             @RequestBody
             @Valid
             final MatchCreateRequest matchCreateRequest
     ) {
-        return this.matchService.create(matchCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.matchService.create(matchCreateRequest));
     }
 
     @PutMapping
-    public MatchResponse update(
+    public ResponseEntity<MatchResponse> update(
             @RequestBody
             @Valid
             final MatchUpdateRequest matchUpdateRequest
     ) {
-        return this.matchService.update(matchUpdateRequest);
+        return ResponseEntity.ok(this.matchService.update(matchUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteById(
+    public void deleteById(
             @PathVariable
             @Parameter(description = MATCH.ID_DESC, example = MATCH.ID_EXAMPLE)
             final String id
     ) {
         this.matchService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public MatchResponse getById(
+    public ResponseEntity<MatchResponse> getById(
             @PathVariable
             @Parameter(description = MATCH.ID_DESC, example = MATCH.ID_EXAMPLE)
             final String id
     ) {
-        return this.matchService.getById(id);
+        return ResponseEntity.ok(this.matchService.getById(id));
     }
 
     @GetMapping("/findAll")
-    public Page<MatchResponse> getAll(
+    public ResponseEntity<Page<MatchResponse>> getAll(
             @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             @RequestParam(required = false)
             final String clubId,
@@ -82,11 +80,11 @@ public class MatchController {
             @ParameterObject
             final Pageable pageable
     ) {
-        return this.matchService.getAll(clubId, matchThrashingFilter, pageable);
+        return ResponseEntity.ok(this.matchService.getAll(clubId, matchThrashingFilter, pageable));
     }
 
     @GetMapping("/retrospect/general")
-    public GeneralRetrospect getGeneralRetrospect(
+    public ResponseEntity<GeneralRetrospect> getGeneralRetrospect(
             @NotNull
             @RequestParam
             @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
@@ -95,11 +93,11 @@ public class MatchController {
             @ParameterObject
             final MatchActingFilter matchActingFilter
     ) {
-        return this.matchService.getGeneralRetrospect(clubId, matchActingFilter);
+        return ResponseEntity.ok(this.matchService.getGeneralRetrospect(clubId, matchActingFilter));
     }
 
     @GetMapping("/retrospect/opponents")
-    public List<RetrospectByOpponent> getRetrospectByOpponents(
+    public ResponseEntity<List<RetrospectByOpponent>> getRetrospectByOpponents(
             @NotEmpty
             @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             @RequestParam(required = false)
@@ -108,11 +106,11 @@ public class MatchController {
             @ParameterObject
             final MatchActingFilter matchActingFilter
     ) {
-        return this.matchService.getRetrospectByOpponents(clubId, matchActingFilter);
+        return ResponseEntity.ok(this.matchService.getRetrospectByOpponents(clubId, matchActingFilter));
     }
 
     @GetMapping("/retrospect/direct-confrontations")
-    public DirectConfrontationsResponse getDirectConfrontations(
+    public ResponseEntity<DirectConfrontationsResponse> getDirectConfrontations(
             @NotEmpty
             @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             final String clubA_id,
@@ -121,11 +119,11 @@ public class MatchController {
             @Schema(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             final String clubB_id
     ) {
-        return this.matchService.getDirectConfrontations(clubA_id, clubB_id);
+        return ResponseEntity.ok(this.matchService.getDirectConfrontations(clubA_id, clubB_id));
     }
 
     @GetMapping("/ranking")
-    public List<RankingResponse> getRanking() {
-        return this.matchService.getRanking();
+    public ResponseEntity<List<RankingResponse>> getRanking() {
+        return ResponseEntity.ok(this.matchService.getRanking());
     }
 }

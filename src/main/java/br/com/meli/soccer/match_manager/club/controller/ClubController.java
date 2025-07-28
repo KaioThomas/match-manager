@@ -23,46 +23,43 @@ public class ClubController {
     private final ClubService clubService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ClubResponse create(
+    public ResponseEntity<ClubResponse> create(
             @Valid
             @RequestBody
             final ClubCreateRequest clubCreateRequest
     ) {
-        return this.clubService.create(clubCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.clubService.create(clubCreateRequest));
     }
 
     @PutMapping
-    public ClubResponse update(
+    public ResponseEntity<ClubResponse> update(
             @Valid
             @RequestBody
             final ClubUpdateRequest clubUpdateRequest
     ) {
-        return this.clubService.update(clubUpdateRequest);
+        return ResponseEntity.ok(this.clubService.update(clubUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Object> deleteById(
+    public void deleteById(
             @PathVariable
             @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             final String id
     ) {
         this.clubService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ClubResponse getById(
+    public ResponseEntity<ClubResponse> getById(
             @PathVariable
             @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)
             final String id
     ) {
-        return this.clubService.getById(id);
+        return ResponseEntity.ok(this.clubService.getById(id));
     }
 
     @GetMapping("/findAll")
-    public Page<ClubResponse> getAll(
+    public ResponseEntity<Page<ClubResponse>> getAll(
             @RequestParam(required = false)
             @Parameter(description = CLUB.NAME_DESC, example = CLUB.NAME_EXAMPLE)
             final String name,
@@ -78,6 +75,6 @@ public class ClubController {
             @ParameterObject
             final Pageable pageable
     ) {
-        return this.clubService.getAll(name, active, acronymState, pageable);
+        return ResponseEntity.ok(this.clubService.getAll(name, active, acronymState, pageable));
     }
 }

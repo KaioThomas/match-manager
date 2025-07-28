@@ -12,6 +12,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,39 +23,38 @@ public class StadiumController {
     private final StadiumService stadiumService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public StadiumResponse create(
+    public ResponseEntity<StadiumResponse> create(
             @Valid
             @RequestBody
             final StadiumCreateRequest stadiumCreateRequest
     ) {
-        return this.stadiumService.create(stadiumCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.stadiumService.create(stadiumCreateRequest));
     }
 
     @PutMapping
-    public StadiumResponse update(
+    public ResponseEntity<StadiumResponse> update(
             @Valid
             @RequestBody
             final StadiumUpdateRequest stadiumUpdateRequest
     ) {
-        return this.stadiumService.update(stadiumUpdateRequest);
+        return ResponseEntity.ok(this.stadiumService.update(stadiumUpdateRequest));
     }
 
     @GetMapping("/{id}")
-    public StadiumResponse getById(
+    public ResponseEntity<StadiumResponse> getById(
             @PathVariable
             @Parameter(description = SchemaConstants.STADIUM.ID_DESC, example = SchemaConstants.STADIUM.ID_EXAMPLE)
             final String id
     ) {
-        return this.stadiumService.getById(id);
+        return  ResponseEntity.ok(this.stadiumService.getById(id));
     }
 
     @GetMapping("/findAll")
-    public Page<StadiumResponse> getAll(
+    public ResponseEntity<Page<StadiumResponse>> getAll(
             @ParameterObject
             final Pageable pageable
     ) {
-        return this.stadiumService.getAll(pageable);
+        return  ResponseEntity.ok(this.stadiumService.getAll(pageable));
     }
 
 }
