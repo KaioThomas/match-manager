@@ -45,7 +45,7 @@ public class MathServiceImpl implements MatchService {
     @Override
     @Transactional
     public MatchResponse create(MatchCreateRequest matchCreateRequest) {
-        Match match = this.createMatchEntity(matchCreateRequest);
+        Match match = this.createMatchEntity(matchCreateRequest, new Match());
 
         this.matchValidator.validate(match);
 
@@ -55,7 +55,8 @@ public class MathServiceImpl implements MatchService {
     @Override
     @Transactional
     public MatchResponse update(MatchUpdateRequest matchUpdateRequest) {
-        Match match = this.createMatchEntity(matchUpdateRequest);
+        Match matchToUpdate = this.matchRepository.findById(matchUpdateRequest.getId()).orElseThrow(() -> new NotFoundException(MATCH.NOT_FOUND));
+        Match match = this.createMatchEntity(matchUpdateRequest, matchToUpdate);
         
         this.matchValidator.validate(match);
 
@@ -219,17 +220,7 @@ public class MathServiceImpl implements MatchService {
                 .toList();
     }
 
-    private Match createMatchEntity(MatchRequest matchRequest) {
-        Match match;
-
-        if(matchRequest.getClass().equals(MatchCreateRequest.class)) {
-            match = new Match();
-        } else {
-            MatchUpdateRequest matchUpdateRequest = (MatchUpdateRequest) matchRequest;
-            match = this.matchRepository.findById(matchUpdateRequest.getId())
-                    .orElseThrow(() -> new NotFoundException(MATCH.NOT_FOUND));
-        }
-
+    private Match createMatchEntity(MatchRequest matchRequest, Match match) {
         Stadium stadium = this.stadiumRepository.findById(matchRequest.getStadiumId())
                 .orElseThrow(() -> new InvalidFieldsException(STADIUM.NOT_FOUND));
 
@@ -240,6 +231,5 @@ public class MathServiceImpl implements MatchService {
                 orElseThrow(() -> new InvalidFieldsException(CLUB.NOT_FOUND));
 
         return MatchMapper.toEntity(matchRequest, stadium, homeClub, visitingClub, match);
-
     }
 }
