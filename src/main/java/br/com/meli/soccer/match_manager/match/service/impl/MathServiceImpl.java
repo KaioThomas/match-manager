@@ -21,11 +21,11 @@ import br.com.meli.soccer.match_manager.match.repository.MatchRepository;
 import br.com.meli.soccer.match_manager.stadium.repository.StadiumRepository;
 import br.com.meli.soccer.match_manager.match.service.MatchService;
 import br.com.meli.soccer.match_manager.match.mapper.MatchMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public MatchResponse getById(String id) {
 
         Match match = this.matchRepository.findById(id)
@@ -72,7 +72,7 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MatchResponse> getAll(String clubId, MatchThrashingFilter matchThrashingFilter, Pageable pageable) {
 
         Specification<Match> matchSpecification = MatchSpecification.matchsByFilledFields(clubId, matchThrashingFilter.thrashing());
@@ -90,7 +90,7 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<RetrospectByOpponent> getRetrospectByOpponents(String clubId, MatchActingFilter matchActingFilter) {
         if(!this.clubRepository.existsById(clubId)) {
             throw new NotFoundException(CLUB.NOT_FOUND);
@@ -100,7 +100,7 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public GeneralRetrospect getGeneralRetrospect(String clubId, MatchActingFilter matchActingFilter) {
         if(!this.clubRepository.existsById(clubId)) {
             throw new NotFoundException(CLUB.NOT_FOUND);
@@ -110,7 +110,7 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public DirectConfrontationsResponse getDirectConfrontations(String idClubA, String idClubB) {
         Club clubA = this.clubRepository.findById(idClubA).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
         Club clubB = this.clubRepository.findById(idClubB).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));

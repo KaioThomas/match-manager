@@ -11,10 +11,10 @@ import br.com.meli.soccer.match_manager.club.repository.ClubRepository;
 import br.com.meli.soccer.match_manager.club.mapper.ClubMapper;
 import br.com.meli.soccer.match_manager.club.service.ClubService;
 import br.com.meli.soccer.match_manager.club.validation.ClubValidator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ClubResponse getById(String id) {
         Club club = this.clubRepository.findById(id).orElseThrow(() -> new NotFoundException(CLUB.NOT_FOUND));
         return ClubMapper.toResponse(club);
@@ -63,7 +63,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ClubResponse> getAll(
             String name,
             Boolean active,

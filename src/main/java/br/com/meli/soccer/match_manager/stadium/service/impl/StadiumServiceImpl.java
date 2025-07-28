@@ -10,12 +10,10 @@ import br.com.meli.soccer.match_manager.stadium.repository.StadiumRepository;
 import br.com.meli.soccer.match_manager.stadium.service.StadiumService;
 import br.com.meli.soccer.match_manager.stadium.mapper.StadiumMapper;
 import br.com.meli.soccer.match_manager.stadium.validation.StadiumValidator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -54,7 +52,7 @@ public class StadiumServiceImpl implements StadiumService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public StadiumResponse getById(String id) {
         Stadium response = this.stadiumRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(STADIUM.NOT_FOUND));
@@ -63,7 +61,7 @@ public class StadiumServiceImpl implements StadiumService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<StadiumResponse> getAll(Pageable pageable) {
         List<Stadium> stadiums = this.stadiumRepository.findAll(pageable).getContent();
 
