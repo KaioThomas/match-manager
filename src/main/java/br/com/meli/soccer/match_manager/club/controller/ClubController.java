@@ -41,6 +41,7 @@ public class ClubController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(
             @PathVariable
             @Parameter(description = CLUB.ID_DESC, example = CLUB.ID_EXAMPLE)

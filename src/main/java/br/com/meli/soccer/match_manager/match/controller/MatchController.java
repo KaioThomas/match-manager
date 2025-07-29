@@ -51,6 +51,7 @@ public class MatchController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(
             @PathVariable
             @Parameter(description = MATCH.ID_DESC, example = MATCH.ID_EXAMPLE)
