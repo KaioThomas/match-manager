@@ -6,6 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 public class PositiveNumberValidator implements ConstraintValidator<PositiveNumber, Integer> {
     @Override
     public boolean isValid(Integer number, ConstraintValidatorContext constraintValidatorContext) {
-        return number > 0;
+        return number >= 0;
     }
 }

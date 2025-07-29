@@ -4,6 +4,7 @@ import br.com.meli.soccer.match_manager.common.exception.InvalidFieldsException;
 import br.com.meli.soccer.match_manager.match.dto.ClubData;
 import br.com.meli.soccer.match_manager.match.dto.ClubSummary;
 import br.com.meli.soccer.match_manager.match.dto.GeneralRetrospect;
+import br.com.meli.soccer.match_manager.match.dto.Ranking;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.*;
@@ -129,43 +130,8 @@ public class MathServiceImpl implements MatchService {
     }
 
     @Override
-    public List<RankingResponse> getRanking() {
-        List<RankingResponse> rankingResponses = defineRanking();
-        rankingResponses.sort(Comparator.comparing(RankingResponse::getTotalScore));
-        return rankingResponses;
-
-    }
-
-    private List<RankingResponse> defineRanking() {
-        List<Club> clubs = this.clubRepository.findAll();
-
-        if(clubs.isEmpty()) {
-            return List.of();
-        }
-
-        Map<String,RankingResponse> rankingResponseMap = new HashMap<>();
-
-        for(Club club : clubs) {
-            List<Match> matches = this.matchRepository.findAll(MatchSpecification.matchRetrospect(club.getId(), null));
-
-            if(matches.isEmpty()) {
-                continue;
-            }
-
-            GeneralRetrospect totalClubRetrospect = createGeneralRetrospectResponse(matches, club.getId());
-            String clubId = club.getId();
-            ClubData clubData = new ClubData(clubId, club.getName());
-
-            rankingResponseMap.computeIfAbsent(clubId, _ -> new RankingResponse(clubData))
-                    .generateRanking(
-                            totalClubRetrospect.getTotalVictories(),
-                            totalClubRetrospect.getTotalDraws(),
-                            totalClubRetrospect.getGoalsScored(),
-                            matches.size()
-                    );
-        }
-
-        return new ArrayList<>(rankingResponseMap.values());
+    public List<Ranking> getRanking() {
+        return this.matchRepository.findRanking();
     }
 
     private GeneralRetrospect createGeneralRetrospectResponse(List<Match> matches, String clubId) {

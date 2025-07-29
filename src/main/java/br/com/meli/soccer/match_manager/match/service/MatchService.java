@@ -1,6 +1,7 @@
 package br.com.meli.soccer.match_manager.match.service;
 
 import br.com.meli.soccer.match_manager.match.dto.GeneralRetrospect;
+import br.com.meli.soccer.match_manager.match.dto.Ranking;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.*;
@@ -29,5 +30,5 @@ public interface MatchService {
 
     DirectConfrontationsResponse getDirectConfrontations(String idClubA, String idClubB);
 
-    List<RankingResponse> getRanking();
+    List<Ranking> getRanking();
 }

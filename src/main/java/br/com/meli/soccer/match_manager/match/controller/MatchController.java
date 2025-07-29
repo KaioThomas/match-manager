@@ -3,6 +3,7 @@ package br.com.meli.soccer.match_manager.match.controller;
 import br.com.meli.soccer.match_manager.common.constants.SchemaConstants.MATCH;
 import br.com.meli.soccer.match_manager.common.constants.SchemaConstants.CLUB;
 import br.com.meli.soccer.match_manager.match.dto.GeneralRetrospect;
+import br.com.meli.soccer.match_manager.match.dto.Ranking;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchActingFilter;
 import br.com.meli.soccer.match_manager.match.dto.filter.MatchThrashingFilter;
 import br.com.meli.soccer.match_manager.match.dto.response.*;
@@ -123,7 +124,7 @@ public class MatchController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<RankingResponse>> getRanking() {
+    public ResponseEntity<List<Ranking>> getRanking() {
         return ResponseEntity.ok(this.matchService.getRanking());
     }
 }
